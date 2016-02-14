@@ -73,9 +73,11 @@ function [fin_sol, fin_rm_redunt, Out_solName, Out_sol, G_init, G_gadget, G_gadg
     IN_tab_Nodes = IN_transform_Nodes(G_comp);
 
     G_comp_temp = digraph([], []);
+%     G_comp_temp1 = digraph([], []);
 
     G_comp_temp = addnode(G_comp_temp, IN_tab_Nodes); 
-    
+%     G_comp_temp1 = G_comp_temp; %addnode(G_comp_temp, IN_tab_Nodes); 
+%     
 %     figure;
 %     plot(G_comp);
 %     title('Given Completed Graph with duplicate nodes added and orphan nodes removed');
@@ -85,8 +87,17 @@ function [fin_sol, fin_rm_redunt, Out_solName, Out_sol, G_init, G_gadget, G_gadg
     % add edges to the new nodes which are made in previous step
 
     [IN_Interedge_s, IN_Interedge_e, IN_Interedge_w] = IN_transform_Interedge(G_comp);
-    IN_tab_Interedge = IN_tab_Interedge(~cellfun('isempty',IN_tab_Interedge.EndNodes(:,1)),:); % remove the empty entries from the table
-    G_comp_temp = addedge(G_comp_temp, IN_tab_Interedge);     % fin_sol = fin_sol(~cellfun('isempty',fin_sol)); % removing empty cells
+    
+    
+    IN_Interedge_s = IN_Interedge_s(~cellfun('isempty',IN_Interedge_s(:,1))); % remove the empty entries from the CELL
+    IN_Interedge_e = IN_Interedge_e(~cellfun('isempty',IN_Interedge_e(:,1)));
+    IN_Interedge_w = IN_Interedge_w(IN_Interedge_w>0);
+    
+    
+%     IN_tab_Interedge = IN_tab_Interedge(~cellfun('isempty',IN_tab_Interedge.EndNodes(:,1)),:); % remove the empty entries from the table
+    
+%     G_comp_temp = addedge(G_comp_temp, IN_tab_Interedge);
+    G_comp_temp = addedge(G_comp_temp, IN_Interedge_s, IN_Interedge_e, IN_Interedge_w);     % fin_sol = fin_sol(~cellfun('isempty',fin_sol)); % removing empty cells
     
     % % adding zero cost edges between the new nodes
 

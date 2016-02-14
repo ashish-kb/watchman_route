@@ -84,9 +84,12 @@ function [fin_sol, fin_rm_redunt, Out_solName, Out_sol, G_init, G_gadget, G_gadg
     
     % add edges to the new nodes which are made in previous step
 
-    IN_tab_Interedge = IN_transform_Interedge(G_comp);
-    IN_tab_Interedge = IN_tab_Interedge(~cellfun('isempty',IN_tab_Interedge.EndNodes(:,1)),:); % remove the empty entries from the table
-    G_comp_temp = addedge(G_comp_temp, IN_tab_Interedge);     % fin_sol = fin_sol(~cellfun('isempty',fin_sol)); % removing empty cells
+    [IN_Interedge_s, IN_Interedge_e, IN_Interedge_w, IN_tab_Interedge] = IN_transform_Interedge(G_comp);
+    IN_Interedge_s = IN_Interedge_s(~cellfun('isempty',IN_Interedge_s(:,1))); % remove the empty entries from the CELL
+    IN_Interedge_e = IN_Interedge_e(~cellfun('isempty',IN_Interedge_e(:,1)));
+    IN_Interedge_w = IN_Interedge_w(~cellfun('isempty',IN_Interedge_w(:,1)));
+    
+    G_comp_temp = addedge(G_comp_temp, IN_Interedge_s, IN_Interedge_e, IN_Interedge_w);     % fin_sol = fin_sol(~cellfun('isempty',fin_sol)); % removing empty cells
     
     % % adding zero cost edges between the new nodes
 
@@ -207,53 +210,56 @@ function [fin_sol, fin_rm_redunt, Out_solName, Out_sol, G_init, G_gadget, G_gadg
      temp_G = G_gadget;
 
      G_gadget2 = graph([], []);
-
-
-     [r_Gnodes c_Gnodes] = size(temp_G.Nodes);
-     [r_Gedge c_Gedge] = size(temp_G.Edges);
-
-     undir_table = table(cell(r_Gnodes*3,1), 'VariableNames',{'Name'});
-     undir_edgetab = table(cell(r_Gnodes*2,2), zeros(r_Gnodes*2,1), 'VariableNames', {'EndNodes','Weight'}); % has only internal edges  1;A,1-1 -> 2;A,1-1 and 2;A,1-1 -> 3;A,1-1 of this type
-     % for every node we have 2 edges(to make it undirected) and all already
-     % existing edges in G_gadget we have a edge in G_gadget2
-     tab_counter = 0; % its actually tab node counter
-     tab_edgecounter = 1 ; % its tab edge
-
-    % adding new nodes for undirected graph A,1-1 becomes 1;A,1-1   2;A,1-1 3;A,1-1
-    % also adding edges 1;A,1-1 -> 2;A,1-1 and 2;A,1-1 -> 3;A,1-1
-
-    for i = 1:r_Gnodes
-
-
-        for j=1:3
-            tab_counter = tab_counter+1;
-            str_cur = sprintf('%d;%s', j, G_gadget.Nodes.Name{i}); % A,1-1 becomes 1;A,1-1   2;A,1-1 3;A,1-1
-            undir_table(tab_counter, 'Name') =  table({str_cur}, 'VariableNames',{'Name'});% making the undirected table and will add to the graph together as this saves time
-
-        end
-
-
-        undir_edgetab(tab_edgecounter:(tab_edgecounter+1), :)  = table([undir_table{(tab_counter-2),'Name'} undir_table{(tab_counter-1),'Name'}...
-                                             ;undir_table{(tab_counter-1),'Name'} undir_table{tab_counter,'Name'}] , [0 0]',...
-                                             'VariableNames',{'EndNodes','Weight'});   % edges 1;A,1-1 -> 2;A,1-1 and 2;A,1-1 -> 3;A,1-1
-
-        tab_edgecounter = tab_edgecounter+2; % as we are adding 2 rows in the table at once
-
-
-    end
-    
+     
      str_1node_intra = cellfun(@(x,y) sprintf('1;%s', x), G_gadget.Nodes.Name,'uni', 0);
      str_2node_intra = cellfun(@(x,y) sprintf('2;%s', x), G_gadget.Nodes.Name,'uni', 0);
      str_3node_intra = cellfun(@(x,y) sprintf('3;%s', x), G_gadget.Nodes.Name,'uni', 0);
      
-    G_gadget22 = graph([], []);
-    G_gadget22 = addedge
-    G_gadget22 = addedge(G_gadget22, [str_1node_intra;str_2node_intra], [str_2node_intra;str_3node_intra], zeros(2*G_gadget.numnodes,1));
-    %G_gadget22 = addedge(G_gadget22, , str_3node_intra);
-    
+     G_gadget2 = addedge(G_gadget2, [str_1node_intra;str_2node_intra], [str_2node_intra;str_3node_intra], zeros(2*G_gadget.numnodes,1));
 
+%      [r_Gnodes c_Gnodes] = size(temp_G.Nodes);
+%      [r_Gedge c_Gedge] = size(temp_G.Edges);
+% 
+%      undir_table = table(cell(r_Gnodes*3,1), 'VariableNames',{'Name'});
+%      undir_edgetab = table(cell(r_Gnodes*2,2), zeros(r_Gnodes*2,1), 'VariableNames', {'EndNodes','Weight'}); % has only internal edges  1;A,1-1 -> 2;A,1-1 and 2;A,1-1 -> 3;A,1-1 of this type
+%      % for every node we have 2 edges(to make it undirected) and all already
+%      % existing edges in G_gadget we have a edge in G_gadget2
+%      tab_counter = 0; % its actually tab node counter
+%      tab_edgecounter = 1 ; % its tab edge
+% 
+%     % adding new nodes for undirected graph A,1-1 becomes 1;A,1-1   2;A,1-1 3;A,1-1
+%     % also adding edges 1;A,1-1 -> 2;A,1-1 and 2;A,1-1 -> 3;A,1-1
+% 
+%     for i = 1:r_Gnodes
+% 
+% 
+%         for j=1:3
+%             tab_counter = tab_counter+1;
+%             str_cur = sprintf('%d;%s', j, G_gadget.Nodes.Name{i}); % A,1-1 becomes 1;A,1-1   2;A,1-1 3;A,1-1
+%             undir_table(tab_counter, 'Name') =  table({str_cur}, 'VariableNames',{'Name'});% making the undirected table and will add to the graph together as this saves time
+% 
+%         end
+% 
+% 
+%         undir_edgetab(tab_edgecounter:(tab_edgecounter+1), :)  = table([undir_table{(tab_counter-2),'Name'} undir_table{(tab_counter-1),'Name'}...
+%                                              ;undir_table{(tab_counter-1),'Name'} undir_table{tab_counter,'Name'}] , [0 0]',...
+%                                              'VariableNames',{'EndNodes','Weight'});   % edges 1;A,1-1 -> 2;A,1-1 and 2;A,1-1 -> 3;A,1-1
+% 
+%         tab_edgecounter = tab_edgecounter+2; % as we are adding 2 rows in the table at once
+% 
+% 
+%     end
+    
+ 
+%     G_gadget22 = graph([], []);
+    
+   % G_gadget22 = addnode(G_gadget22, [str_1node_intra;str_2node_intra;str_3node_intra]);
+    
+    %G_gadget22 = addedge(G_gadget22, , str_3node_intra);
+%     G_gadget2  = G_gadget22;
+    
  % need not  to add nodes adding edges does that automatically  %G_gadget2 = addnode(G_gadget2, undir_table); % we had made the tables above just putting those in the graph
-    G_gadget2 = addedge(G_gadget2, undir_edgetab); %we had made the tables above just putting those in the graph
+%      G_gadget2 = addedge(G_gadget2, undir_edgetab); %we had made the tables above just putting those in the graph
     %%
 
     % ** we will add edges for an edge A,1-1 to C,1-1 the new edge becomes
@@ -323,6 +329,7 @@ function [fin_sol, fin_rm_redunt, Out_solName, Out_sol, G_init, G_gadget, G_gadg
     
     
     Out_solName = G_gadget2.Nodes.Name(Out_sol);
+    
 
     %%
     % following we are doing to highlight the solution

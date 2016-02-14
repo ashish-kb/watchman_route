@@ -9,7 +9,7 @@ function [IN_Interedge_s, IN_Interedge_e, IN_Interedge_w]= IN_transform_Interedg
         int_clus_tot = int_clus_tot + tot_clus(i)*(sum(tot_clus)-tot_clus(i));
     end
   
-    %table(cell(int_clus_tot,2), zeros(int_clus_tot,1), 'VariableNames', {'EndNodes','Weight'}); 
+%     IN_tab_Interedge = table(cell(int_clus_tot,2), zeros(int_clus_tot,1), 'VariableNames', {'EndNodes','Weight'}); 
     IN_Interedge_s = cell(int_clus_tot,1);
     IN_Interedge_e = cell(int_clus_tot,1);
     IN_Interedge_w = zeros(int_clus_tot,1);
@@ -49,8 +49,8 @@ function [IN_Interedge_s, IN_Interedge_e, IN_Interedge_w]= IN_transform_Interedg
                      str_e =   sprintf('%s-%d', node_nam_end_vec{i}, cur_clus_end_vecKth);
                      
                      %IN_tab_Interedge = [IN_tab_Interedge;table({str_s str_e}, [ graph.Edges.Weight(i)], 'VariableNames', {'EndNodes','Weight'})];
-                     IN_Interedge_s(edge_count) = str_s;
-                     IN_Interedge_e(edge_count) = str_e;
+                     IN_Interedge_s{edge_count} = str_s;
+                     IN_Interedge_e{edge_count} = str_e;
                      IN_Interedge_w(edge_count) = graph.Edges.Weight(i);
 %                      IN_tab_Interedge(edge_count,:) = table({str_s str_e}, [graph.Edges.Weight(i)], 'VariableNames', {'EndNodes','Weight'});
                      edge_count = edge_count+1;
