@@ -154,10 +154,10 @@ function [fin_sol, fin_rm_redunt, G_init, G_gadget, G_gadget2, total_cost, whole
             finsol_count = finsol_count+1;
         else
              cur_node  = strtok(strtok(fin_sol{i}, '-'),'V');
-             cur_clus = strsplit(fin_sol{i}, '-');
-             solclus{i} = cur_clus{2};       
+             cur_clus =  fin_sol{i}((regexp(fin_sol{i},'-','start')+1):end)   ;%strsplit(fin_sol{i}, '-');
+             solclus{i} = cur_clus;       
              solnode{i} = cur_node;
-             if(~(isequal(cur_clus{2},solclus{i-1}) || isequal(cur_node,solnode{i-1})))
+             if(~(isequal(cur_clus,solclus{i-1}) || isequal(cur_node,solnode{i-1})))
                  fin_rm_redunt{finsol_count}  = strtok(fin_sol{i}, '-');             
                  finsol_count = finsol_count+1;
              end

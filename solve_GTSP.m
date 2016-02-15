@@ -318,19 +318,23 @@ function [fin_sol, fin_rm_redunt, Out_solName, Out_sol, G_init, G_gadget, G_gadg
     tot_edgeweight = sum(G_gadget2.Edges.Weight);
     gadget2_compMat = (tot_edgeweight*50+100)*ones(G_gadget2.numnodes, G_gadget2.numnodes) - diag((tot_edgeweight*50+99)*ones(1,G_gadget2.numnodes));
 
+%     gadget2_compMat1 = gadget2_compMat;
 
-
-    for i = 1:G_gadget2.numedges
-
-         gadget2_compMat(s_gadget2(i),t_gadget2(i))  =  G_gadget2.Edges.Weight(i);
-         gadget2_compMat(t_gadget2(i), s_gadget2(i))  =  G_gadget2.Edges.Weight(i);
-
-
-
-    end
-
-
+%     for i = 1:G_gadget2.numedges
+% 
+%          gadget2_compMat(s_gadget2(i),t_gadget2(i))  =  G_gadget2.Edges.Weight(i);
+%          gadget2_compMat(t_gadget2(i), s_gadget2(i))  =  G_gadget2.Edges.Weight(i);
+% 
+% 
+% 
+%     end
+    ind_gadget2 = sub2ind(size(gadget2_compMat), s_gadget2(:), t_gadget2(:));
+    ind_gadget2 = [ind_gadget2;sub2ind(size(gadget2_compMat), t_gadget2(:), s_gadget2(:))];
     
+    weight_feed_mat = G_gadget2.Edges.Weight(:); % will feed this below
+    gadget2_compMat(ind_gadget2(:)) = [weight_feed_mat; weight_feed_mat];
+    
+%     gadget2_compMat1(t_gadget2(:), s_gadget2(:))  =  G_gadget2.Edges.Weight(:);
 
     [Out_sol, time_concorde_struct] = TSP_tour_EXPLICIT(gadget2_compMat,'/home/ashishkb/softwares/concorde/concorde_build/TSP/concorde');
     
@@ -378,10 +382,10 @@ function [fin_sol, fin_rm_redunt, Out_solName, Out_sol, G_init, G_gadget, G_gadg
      prev_node = '';
     for i = 1:length(Out_solName)    
 
-        split_sol = strsplit(Out_solName{i},','); % splitting 1;A,1-1 to give cell(2,1) with cell{1} = 1;A and cell{2} = 1-1
+        split_sol = Out_solName{i}(5:end);% strsplit(Out_solName{i},','); % splitting 1;A,1-1 to give cell(2,1) with cell{1} = 1;A and cell{2} = 1-1
 
         if(~ ismember('e',Out_solName{i}))
-            add_node = sprintf('V%s',split_sol{2}); % 1-1 becomes V1-1
+            add_node = sprintf('V%s',split_sol); % 1-1 becomes V1-1
         end
 
         if(~isequal(add_node, prev_node))  % checking if new node being added wasn't added in the previous step itself*********  % this was previous condition (~ismember(addnode, fin_sol))&& (~ ismember('e',Out_solName{i})

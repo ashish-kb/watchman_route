@@ -27,6 +27,8 @@ function [IN_Interedge_s, IN_Interedge_e, IN_Interedge_w]= IN_transform_Interedg
     node_nam_start_vec = graph.Nodes.Name(start_idx(:));
     node_nam_end_vec = graph.Nodes.Name(end_idx(:));
     
+    weights_feeder = graph.Edges.Weight(:); % access the weights at once then then store at the right location below ...saves time
+    
     for i = 1:graph.numedges
     %     start_idx = findnode(graph, graph.Edges.EndNodes{i,1});
     %     end_idx   = findnode(graph, graph.Edges.EndNodes{i,2});
@@ -51,7 +53,7 @@ function [IN_Interedge_s, IN_Interedge_e, IN_Interedge_w]= IN_transform_Interedg
                      %IN_tab_Interedge = [IN_tab_Interedge;table({str_s str_e}, [ graph.Edges.Weight(i)], 'VariableNames', {'EndNodes','Weight'})];
                      IN_Interedge_s{edge_count} = str_s;
                      IN_Interedge_e{edge_count} = str_e;
-                     IN_Interedge_w(edge_count) = graph.Edges.Weight(i);
+                     IN_Interedge_w(edge_count) = weights_feeder(i);
 %                      IN_tab_Interedge(edge_count,:) = table({str_s str_e}, [graph.Edges.Weight(i)], 'VariableNames', {'EndNodes','Weight'});
                      edge_count = edge_count+1;
                 end
