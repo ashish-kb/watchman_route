@@ -112,12 +112,16 @@ function [fin_sol, fin_rm_redunt, Out_solName, Out_sol, G_init, G_gadget, G_gadg
     G_comp = G_comp_temp;
 
     G_gadget = digraph([], []);
-    G_gadget = digraph([], []);
+    G_gadget1 = digraph([], []);
     
     [r_nodesize, ~] = size(G_comp.Nodes);
 
     exitvar =1;
     prenode_tab = G_comp.Nodes;
+    
+    add_edgetable =  table({}, [], 'VariableNames',{'EndNodes','Weight'});
+    con_prevGadgetTab =  table({}, [], 'VariableNames',{'EndNodes','Weight'});
+    con_lastToFirst =  table({}, [], 'VariableNames',{'EndNodes','Weight'});
 
     for k = 1:r_nodesize
         
@@ -133,27 +137,32 @@ function [fin_sol, fin_rm_redunt, Out_solName, Out_sol, G_init, G_gadget, G_gadg
                 str_b  = sprintf('B,%s-%s', str_num, str_clus); 
                 str_c  = sprintf('C,%s-%s', str_num, str_clus); 
                 cur_clus = prenode_tab.Cluster{match_clusind(j)}; % cur_clus is the current cluster
-                addabc_table = table({str_a str_b str_c}', {cur_clus cur_clus cur_clus}', 'VariableNames', {'Name' 'Cluster'});
-
-                G_gadget = addnode(G_gadget, addabc_table);
+%                 addabc_table = table({str_a str_b str_c}', {cur_clus cur_clus cur_clus}', 'VariableNames', {'Name' 'Cluster'});
+%                 addabc_table1 = [addabc_table1;table({str_a str_b str_c}', {cur_clus cur_clus cur_clus}', 'VariableNames', {'Name' 'Cluster'})];
+                
+%                 G_gadget = addnode(G_gadget, addabc_table);
                 if(j==1)
                     str_e  = sprintf('e-%s', str_clus); % e node added only once for a cluster
-                    adde_table = table({str_e}', {cur_clus}', 'VariableNames', {'Name' 'Cluster'});
-                    G_gadget = addnode(G_gadget, adde_table);
+%                     adde_table = table({str_e}', {cur_clus}', 'VariableNames', {'Name' 'Cluster'});
+%                     adde_table1 = [adde_table1;table({str_e}', {cur_clus}', 'VariableNames', {'Name' 'Cluster'})];
+%                     G_gadget = addnode(G_gadget, adde_table);
                     str_aFirst = str_a;
                     str_Oldc = str_c;           % the new c becomes old c for next cycle of abc...is used to connect cycles
                 end
-                add_edgetable = table({str_a str_b; str_b str_c; str_b str_a; str_c str_e; str_e str_b}, [0 0 0 0 0]', 'VariableNames',{'EndNodes','Weight'}); % adding a->b->c and b->a and c-> e and e-> b
-                G_gadget = addedge(G_gadget, add_edgetable);
+%                 add_edgetable = table({str_a str_b; str_b str_c; str_b str_a; str_c str_e; str_e str_b}, [0 0 0 0 0]', 'VariableNames',{'EndNodes','Weight'}); % adding a->b->c and b->a and c-> e and e-> b
+                add_edgetable = [add_edgetable;table({str_a str_b; str_b str_c; str_b str_a; str_c str_e; str_e str_b}, [0 0 0 0 0]', 'VariableNames',{'EndNodes','Weight'})];
+%                 G_gadget = addedge(G_gadget, add_edgetable);
                 if(j>1)
-                    con_prevGadgetTab =  table({str_Oldc str_a}, 0, 'VariableNames',{'EndNodes','Weight'});% connect current abc to previous abc via an edge from previous c to current c
-                    G_gadget = addedge(G_gadget, con_prevGadgetTab); % connecting abc_old-> abd_new
+%                     con_prevGadgetTab =  table({str_Oldc str_a}, 0, 'VariableNames',{'EndNodes','Weight'});% connect current abc to previous abc via an edge from previous c to current c
+                    con_prevGadgetTab = [con_prevGadgetTab; table({str_Oldc str_a}, 0, 'VariableNames',{'EndNodes','Weight'})];
+%                     G_gadget = addedge(G_gadget, con_prevGadgetTab); % connecting abc_old-> abd_new
                     str_Oldc = str_c;           % the new c becomes old c for next cycle
                 end
 
                 if(j==num_nodecurclus) % its the last node in current cluster then connect it like abc_last -> a_first
-                    con_lastToFirst = table({str_c str_aFirst}, 0, 'VariableNames',{'EndNodes','Weight'});
-                    G_gadget = addedge(G_gadget, con_lastToFirst); % connect it like abc_last -> a_first
+%                     con_lastToFirst = table({str_c str_aFirst}, 0, 'VariableNames',{'EndNodes','Weight'});
+                    con_lastToFirst = [con_lastToFirst;table({str_c str_aFirst}, 0, 'VariableNames',{'EndNodes','Weight'})];
+%                     G_gadget = addedge(G_gadget, con_lastToFirst); % connect it like abc_last -> a_first
                 end
 
             end
@@ -166,8 +175,12 @@ function [fin_sol, fin_rm_redunt, Out_solName, Out_sol, G_init, G_gadget, G_gadg
 
 
     end
-    
-    
+%     addabc_table1
+%     adde_table1
+    G_gadget = addedge(G_gadget, [add_edgetable; con_prevGadgetTab; con_lastToFirst]);
+%     add_edgetable1
+%     con_prevGadgetTab1
+%     con_lastToFirst1
 %      figure;
 % % 
 %     plot(G_gadget, 'EdgeLabel', G_gadget.Edges.Weight);
@@ -175,7 +188,7 @@ function [fin_sol, fin_rm_redunt, Out_solName, Out_sol, G_init, G_gadget, G_gadg
     %**************************** check the edge between V2-5 and V4-5 these
     %********should not exist after G-S(abc) transformation
     % adding interedge nodes
-    interEdge_table  = table({}, [], 'VariableNames',{'EndNodes','Weight'});
+%     interEdge_table  = table({}, [], 'VariableNames',{'EndNodes','Weight'});
     init_Clus_vec = cell2mat(cellfun(@(x) str2double(x((regexp(x,'-','start')+1):end)) , G_comp.Edges.EndNodes(:,1),'uni',0));
     end_Clus_vec = cell2mat(cellfun(@(x) str2double(x((regexp(x,'-','start')+1):end)) , G_comp.Edges.EndNodes(:,2),'uni',0));
     
