@@ -112,6 +112,7 @@ function [fin_sol, fin_rm_redunt, Out_solName, Out_sol, G_init, G_gadget, G_gadg
     G_comp = G_comp_temp;
 
     G_gadget = digraph([], []);
+    G_gadget = digraph([], []);
     
     [r_nodesize, ~] = size(G_comp.Nodes);
 
@@ -119,7 +120,7 @@ function [fin_sol, fin_rm_redunt, Out_solName, Out_sol, G_init, G_gadget, G_gadg
     prenode_tab = G_comp.Nodes;
 
     for k = 1:r_nodesize
-        % ensure that not run for cluster '1'
+        
         if( (prenode_tab.Cluster{k}~=0)) %
             match_clus = ismember(cell2mat(prenode_tab.Cluster), [prenode_tab.Cluster{k}]); % logical array of same cluster members
             match_clusind = find(match_clus); % index where same cluster exist G_comp.Nodes
@@ -165,6 +166,8 @@ function [fin_sol, fin_rm_redunt, Out_solName, Out_sol, G_init, G_gadget, G_gadg
 
 
     end
+    
+    
 %      figure;
 % % 
 %     plot(G_gadget, 'EdgeLabel', G_gadget.Edges.Weight);
