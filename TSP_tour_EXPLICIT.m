@@ -1,4 +1,4 @@
-function [O, time_concorde_struct] = TSP_tour_EXPLICIT(graph,path) % 'graph' - shoudld be a complete graph if incomplete  edges which u don't want should  have cost more than sum of the weights
+function [O, time_concorde_struct] = TSP_tour_EXPLICIT(graph,path_1) % 'graph' - shoudld be a complete graph if incomplete  edges which u don't want should  have cost more than sum of the weights
                                                     % 'path' - '/home/ashishkb/softwares/concorde/concorde_build/TSP/concorde' like this 
                                                     
                                                     
@@ -27,7 +27,10 @@ end
 
 
 % Open the temporary tsplib format file
-fid = fopen('temp.tsp','W');
+c = clock;
+in_filename = sprintf('%stemp.tsp', num2str(1000000*c(6),9));
+out_filename = sprintf('%stemp.sol', num2str(1000000*c(6),9));
+fid = fopen(in_filename,'W');
 if fid < 0
 	error('Cannot create temp file');
 	return;
@@ -52,7 +55,7 @@ fprintf(fid, [repmat(' %d ', 1, size(graph,1)) '\n'], graph');
 fclose(fid);
 
 % Call the concorde solver
-cmd = [path ' -x temp.tsp'];
+cmd = [path_1 ' -x ' in_filename];
 
 time_concorde_struct = struct('total_time',{},'concorde_time',{});
 time_concorde_struct(1).concorde_time  = tic;
@@ -60,7 +63,7 @@ time_concorde_struct(1).concorde_time  = tic;
 system(cmd);
  time_concorde_struct(1).concorde_time = toc(time_concorde_struct(1).concorde_time);
 % Read in results
-fid = fopen('temp.sol','r');
+fid = fopen(out_filename,'r');
 if fid < 0
 	error('Cannot open output file.');
 	return;

@@ -1,7 +1,7 @@
 %*****change filepath 
 
 %Clear the desk
-%clear all; close all; clc;
+clear all; close all; clc;
 
 
 
@@ -55,9 +55,9 @@ end
 % field4 = 'G_gadget';  value4 = {};
 % 
 % s_sol_struct = struct(field1,value1,field2,value2,field3,value3,field4,value4);
-time_script_auto_struct = struct('total_time',{},'concorde_time',{});
-max_guards = 3; 
-max_targets = 3; 
+time_script_auto_struct = struct('total_time',[],'concorde_time',[]);
+max_guards = 10; 
+max_targets = 10; 
 nodes_pushed_tsp = zeros(max_guards*max_targets, 1);
 
 %%
@@ -65,21 +65,37 @@ nodes_pushed_tsp = zeros(max_guards*max_targets, 1);
 
 
 
-guard_target_struct = struct('guards_x',{},'guards_y',{}, 'targets_x', {}, 'targets_y', {}, 'environ_guardX', {}, 'environ_guardY', {}, 'guards', {});
+
 
 environ_guards = cell2mat(environment(:));
-guard_target_struct(1).environ_guardX = environ_guards(:,1);
-guard_target_struct(1).environ_guardY = environ_guards(:,2);
+%* guard_target_struct(1).environ_guardX = environ_guards(:,1);
+%* guard_target_struct(1).environ_guardY = environ_guards(:,2);
 
+
+ environ_guardX = environ_guards(:,1);
+ environ_guardY = environ_guards(:,2);
 
 
 %%
 counter_struct = 1; % itself not a structure just counting through the structure
-for rand_guard_required = 3:max_guards
-    for rand_target_required = 3:max_targets
+for rand_guard_required = 4:max_guards
+    for rand_target_required = 4:max_targets
+%         [x,y, key] = ginput(1);
+%         if (key=='e')
+%             display('Paused press some other key to continue');
+%             pause;
+%         
+%         end     
+%        msgbox()msgbox(sprintf('These Values are incorrect WARNING %f warn',k))
         
-        for average_generator = 1:10 % this for loop ensures that average time for particular number of targets and guards is found
-
+         uiwait(msgbox(sprintf('Target = %d, GuardsNew = %d',rand_target_required, rand_guard_required)));
+        for average_generator = 1:4 % this for loop ensures that average time for particular number of targets and guards is found
+            guard_target_struct = struct('guards_x',{},'guards_y',{}, 'targets_x', {}, 'targets_y', {}, 'environ_guardX', {}, 'environ_guardY', {}, 'guards', {});
+%             nodes_totsp = 0;
+            
+            guard_target_struct(1).environ_guardX = environ_guardX;
+            guard_target_struct(1).environ_guardY = environ_guardY;
+            
             got_guard_rands = 1;
             got_target_rands = 1;
 
@@ -133,28 +149,29 @@ for rand_guard_required = 3:max_guards
             %guards = zeros((size(guard_randX,1) + size(environ_guardX,1) + size(target_randX,1)),2);
 
             guard_target_struct(1).guards = [[guard_randX, guard_randY]; [guard_target_struct(1).environ_guardX, guard_target_struct(1).environ_guardY];[target_randX, target_randY]];  % guards and targets concatenated
-
-
+% 
+% 
             guard_target_struct(1).targets_x = target_randX;
             guard_target_struct(1).targets_y = target_randY;
-
+% % 
             guard_target_struct(1).guards_x = [guard_randX; guard_target_struct(1).environ_guardX];
             guard_target_struct(1).guards_y = [guard_randY; guard_target_struct(1).environ_guardY];
             
             %%
 
 
-            visibility_adjacency_matrix = visibility_graph(guard_target_struct(1).guards, environment, epsilon);
+%*              visibility_adjacency_matrix = visibility_graph(guard_target_struct(1).guards, environment, epsilon);
+             visibility_adjacency_matrix = visibility_graph(guard_target_struct(1).guards, environment, epsilon);
 
 
 
 
-            [fin_sol, fin_rm_redunt, G_init, G_gadget, G_gadget2, total_cost, whole_path, time_auto_for_struct] = auto_for_content(visibility_adjacency_matrix, guard_target_struct, counter_struct);
-             %[fin_sol, fin_rm_redunt, G_init, G_gadget, G_gadget2, total_cost, whole_path, time_auto_for_struct]
+             [fin_sol, fin_rm_redunt, G_init, G_gadget2, nodes_totsp, total_cost, whole_path, time_auto_for_struct] = auto_for_content(visibility_adjacency_matrix, guard_target_struct, counter_struct);
+             %[fin_sol, fin_rm_redunt, G_init, G_gadget2, nodes_totsp, total_cost, whole_path, time_auto_for_struct]
 
              time_script_auto_struct(rand_guard_required, rand_target_required, average_generator) = time_auto_for_struct(1);
-             nodes_pushed_tsp(rand_guard_required, rand_target_required, average_generator) = G_gadget2.numnodes;
-             counter_struct = counter_struct+1;
+             nodes_pushed_tsp(rand_guard_required, rand_target_required, average_generator) = nodes_totsp;
+            % counter_struct = counter_struct+1;
         end
     end 
     

@@ -1,4 +1,4 @@
-function [fin_sol, fin_rm_redunt, G_init, G_gadget, G_gadget2, total_cost, whole_path, time_auto_for_struct] = auto_for_content(visibility_adjacency_matrix, guard_target_struct, counter_struct)
+function [fin_sol, fin_rm_redunt, G_init, G_gadget2, nodes_totsp, total_cost, whole_path, time_auto_for_struct] = auto_for_content(visibility_adjacency_matrix, guard_target_struct, counter_struct)
     
 %     filepath_guards = 'ginput2.guards'; % where u want to store that data
 %     filepath_nodetarget = 'ginput2.nodetarget'; % just number of nodes and targets
@@ -87,14 +87,15 @@ function [fin_sol, fin_rm_redunt, G_init, G_gadget, G_gadget2, total_cost, whole
     % To avoid this, I am going to scale all the distances
     % Right now, I am just going to scale by 100
     % TODO a better way of scaling, do this only if necessary
-    scaled_guard_mat_weight = round(100*guard_mat_weight);
+    scaled_guard_mat_weight = round(10*guard_mat_weight);
 
 
     V_adj  = double(scaled_guard_mat_weight);
 
     %%
 
-    [fin_sol, fin_rm_redunt, Out_solName, Out_sol, G_init, G_gadget, G_gadget2, time_concorde_struct] = solve_GTSP(V_adj, V_Cluster);
+    [fin_sol, fin_rm_redunt, ~, ~, G_init, G_gadget, G_gadget2, time_concorde_struct] = solve_GTSP(V_adj, V_Cluster);
+    nodes_totsp = G_gadget2.numnodes;
 
     time_auto_for_struct(1).concorde_time = time_concorde_struct(1).concorde_time;
     %%
