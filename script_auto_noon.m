@@ -111,6 +111,7 @@ for rand_guard_required = 5:5:max_guards
             target_randY = zeros(rand_target_required,1);
 
             % generate random guards
+            rng('shuffle');
 
             while (got_guard_rands <= rand_guard_required)
 

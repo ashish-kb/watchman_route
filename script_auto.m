@@ -108,6 +108,7 @@ for rand_guard_required = 4:max_guards
 
             target_randX = zeros(rand_target_required,1);
             target_randY = zeros(rand_target_required,1);
+            rng('shuffle');
 
             % generate random guards
 
