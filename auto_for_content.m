@@ -104,9 +104,7 @@ function [fin_sol, fin_rm_redunt, G_init, G_gadget2, nodes_totsp, total_cost, wh
     temp_fin_sol = fin_sol;
     cyclic = 1; % assumed not cyclic no split 
     cur_cycle_checked = 1;
-    check_cyc_cnt = 2;
-    last_node = 1;
-    
+   
 
     while (cyclic == 1)
     
@@ -133,7 +131,7 @@ function [fin_sol, fin_rm_redunt, G_init, G_gadget2, nodes_totsp, total_cost, wh
           
           
           
-     end
+    end
 
 
     fin_sol = temp_fin_sol;

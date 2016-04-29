@@ -3,7 +3,8 @@
 %Clear the desk
 clear all; close all; clc;
 
-
+addpath(genpath('/home/ashishkb/Dropbox/MATLAB/RAASLAB/gtsp/solved_cases/'));
+addpath(genpath('/home/ashishkb/Dropbox/MATLAB/RAASLAB/gtsp/source_code/'));
 
 
 format long;
@@ -14,7 +15,7 @@ epsilon = 0.000000001;
 
 
 %Read environment and guards geometry from files
-environment = read_vertices_from_file('./source_code/example2.environment');
+environment = read_vertices_from_file('./source_code/example2_modified.environment');
 
 
 
@@ -56,8 +57,8 @@ end
 % 
 % s_sol_struct = struct(field1,value1,field2,value2,field3,value3,field4,value4);
 
-max_guards = 10; 
-max_targets = 10; 
+max_guards = 30; 
+max_targets = 30; 
 max_average = 10;
 nodes_pushed_tsp = zeros(max_guards*max_targets, 1);
 time_script_auto_concorde = zeros(max_guards, max_targets, max_average);%struct('total_time',[],'concorde_time',[]);
@@ -81,8 +82,8 @@ environ_guards = cell2mat(environment(:));
 
 %%
 counter_struct = 1; % itself not a structure just counting through the structure
-for rand_guard_required = 4:max_guards
-    for rand_target_required = 4:max_targets
+for rand_guard_required = 5:5:max_guards
+    for rand_target_required = 5:5:max_targets
 %         [x,y, key] = ginput(1);
 %         if (key=='e')
 %             display('Paused press some other key to continue');
@@ -91,7 +92,7 @@ for rand_guard_required = 4:max_guards
 %         end     
 %        msgbox()msgbox(sprintf('These Values are incorrect WARNING %f warn',k))
         
-         uiwait(msgbox(sprintf('Target = %d, GuardsNew = %d',rand_target_required, rand_guard_required)));
+      %   uiwait(msgbox(sprintf('Target = %d, GuardsNew = %d',rand_target_required, rand_guard_required)));
         for average_generator = 1:max_average % this for loop ensures that average time for particular number of targets and guards is found
             guard_target_struct = struct('guards_x',{},'guards_y',{}, 'targets_x', {}, 'targets_y', {}, 'environ_guardX', {}, 'environ_guardY', {}, 'guards', {});
 %             nodes_totsp = 0;
@@ -169,13 +170,18 @@ for rand_guard_required = 4:max_guards
 
 
 
-             [fin_sol, fin_rm_redunt, G_init, G_gadget2, nodes_totsp, total_cost, whole_path, time_auto_for_struct] = auto_for_content(visibility_adjacency_matrix, guard_target_struct, counter_struct);
+%            [fin_sol, fin_rm_redunt, G_init, G_gadget2, nodes_totsp, total_cost, whole_path, time_auto_for_struct] = auto_for_content_noon_bean(visibility_adjacency_matrix, guard_target_struct, counter_struct);
+             [outfin_sol, outfin_cost,Out_solName, Out_sol, G_init, edges_totsp, nodes_totsp, time_auto_for_struct] = auto_for_content_noon_bean(visibility_adjacency_matrix, guard_target_struct, counter_struct);
              %[fin_sol, fin_rm_redunt, G_init, G_gadget2, nodes_totsp, total_cost, whole_path, time_auto_for_struct]
-
+             filename = [num2str(rand_guard_required) '_' num2str(rand_target_required) '_' num2str(average_generator) '.mat'];
+             
              time_script_auto_concorde(rand_guard_required, rand_target_required, average_generator) = time_auto_for_struct(1).concorde_time;
              time_script_auto_total(rand_guard_required, rand_target_required, average_generator) = time_auto_for_struct(1).total_time;
              nodes_pushed_tsp(rand_guard_required, rand_target_required, average_generator) = nodes_totsp;
-            % counter_struct = counter_struct+1;
+             
+             save(filename, 'outfin_sol', 'outfin_cost', 'Out_solName', 'Out_sol', 'G_init', 'edges_totsp', 'nodes_totsp', 'time_auto_for_struct', 'visibility_adjacency_matrix', 'guard_target_struct','environment');
+           
+             % counter_struct = counter_struct+1;
         end
     end 
     

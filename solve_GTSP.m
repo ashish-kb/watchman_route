@@ -1,4 +1,4 @@
-% V_adj =    [0     10    0     0;
+ % V_adj =    [0     10    0     0;
 %             10     0    15     0;
 %             0     15     0     20;
 %             0      0     20     0];
@@ -29,9 +29,9 @@ function [fin_sol, fin_rm_redunt, Out_solName, Out_sol, G_init, G_gadget, G_gadg
 
     G_init = digraph(V_adj, node_name);
  
- %   figure;
-%     plot(G_init,'EdgeLabel', G_init.Edges.Weight);
-%     title('Given Graph');
+    figure;
+    P_init = plot(G_init,'EdgeLabel', G_init.Edges.Weight);
+    title('Given Graph');
 
 
     [sz_r_G , sz_c_G] = size(V_adj);
@@ -50,17 +50,17 @@ function [fin_sol, fin_rm_redunt, Out_solName, Out_sol, G_init, G_gadget, G_gadg
 %          end
 %      end
 
-    V_comp =  distances(G_init, 1:sz_r_G,1:sz_c_G);
+     V_comp =  distances(G_init, 1:sz_r_G,1:sz_c_G);
 
 
      G_comp = digraph(V_comp, node_name);
     
 
-     %figure;
-%      plot(G_comp, 'EdgeLabel', G_comp.Edges.Weight);
-%      title('Given Completed Graph');
+      figure;
+      plot(G_comp, 'EdgeLabel', G_comp.Edges.Weight);
+      title('Completed Graph');
 
-
+%some plots in the plot_script
      G_comp.Nodes.Cluster = V_Cluster;
      
      ind_empty_clus = cellfun(@isempty, G_comp.Nodes.Cluster);  % this contains indices of graph where there is no cluster relationship means orphan nodes
@@ -74,13 +74,15 @@ function [fin_sol, fin_rm_redunt, Out_solName, Out_sol, G_init, G_gadget, G_gadg
 
     G_comp_temp = digraph([], []);
 %     G_comp_temp1 = digraph([], []);
+   
 
     G_comp_temp = addnode(G_comp_temp, IN_tab_Nodes); 
-%     G_comp_temp1 = G_comp_temp; %addnode(G_comp_temp, IN_tab_Nodes); 
-%     
-%     figure;
-%     plot(G_comp);
-%     title('Given Completed Graph with duplicate nodes added and orphan nodes removed');
+    
+
+
+    figure;
+    plot(G_comp);
+    title('Given Completed Graph - without - duplicate nodes added and orphan nodes removed');
     
     given_nodes = G_comp.numnodes; 
     
@@ -105,9 +107,9 @@ function [fin_sol, fin_rm_redunt, Out_solName, Out_sol, G_init, G_gadget, G_gadg
 
     G_comp_temp = addedge(G_comp_temp, IN_tab_Zeroedge);
     
-%     figure;
-%     title('Interedges, duplicate nodes and zero cost edges');
-%     plot(G_comp_temp, 'EdgeLabel', G_comp_temp.Edges.Weight);
+    figure;
+    title('Interedges, duplicate nodes and zero cost edges');
+    plot(G_comp_temp, 'EdgeLabel', G_comp_temp.Edges.Weight);
     
     G_comp = G_comp_temp;
 
@@ -181,9 +183,10 @@ function [fin_sol, fin_rm_redunt, Out_solName, Out_sol, G_init, G_gadget, G_gadg
 %     add_edgetable1
 %     con_prevGadgetTab1
 %     con_lastToFirst1
-%      figure;
+      figure;
 % % 
-%     plot(G_gadget, 'EdgeLabel', G_gadget.Edges.Weight);
+    G_gadget_temp = G_gadget;
+     P_gadge = plot(G_gadget_temp, 'EdgeLabel', G_gadget_temp.Edges.Weight);
 
     %**************************** check the edge between V2-5 and V4-5 these
     %********should not exist after G-S(abc) transformation
@@ -219,11 +222,12 @@ function [fin_sol, fin_rm_redunt, Out_solName, Out_sol, G_init, G_gadget, G_gadg
 %str_a_inter = arrayfun(@(x,y) sprintf('A,%d-%d', x, y), )
      % 
 
-%     figure;
+     figure;
 % 
-%     LWidths = 5*(G_gadget.Edges.Weight+1)/max(G_gadget.Edges.Weight);
-%     p_gadget = plot(G_gadget, 'Layout','circle','EdgeLabel', G_gadget.Edges.Weight, 'LineWidth',LWidths);
-%     p_gadget.NodeColor = 'r';
+     LWidths = 5*(G_gadget.Edges.Weight+1)/max(G_gadget.Edges.Weight);
+     P_gadget = plot(G_gadget, 'XData',  P_gadge.XData, 'YData',  P_gadge.YData);
+     %P_gadget = plot(G_gadget, 'Layout','circle','EdgeLabel', G_gadget.Edges.Weight, 'LineWidth',LWidths); %this is when we don't have XData and YData
+     P_gadget.NodeColor = 'r';
 
 
     %%
@@ -350,14 +354,13 @@ function [fin_sol, fin_rm_redunt, Out_solName, Out_sol, G_init, G_gadget, G_gadg
 %     weight_feed_mat = G_gadget2.Edges.Weight(:); % will feed this below
 %     gadget2_compMat(ind_gadget2(:)) = [weight_feed_mat; weight_feed_mat];
     
-%     gadget2_compMat1(t_gadget2(:), s_gadget2(:))  =  G_gadget2.Edges.Weight(:);
 
-%     [Out_sol, time_concorde_struct] = TSP_tour_EXPLICIT(gadget2_compMat,'/home/ashishkb/softwares/concorde/concorde_build/TSP/concorde');
-        
-    [Out_sol, time_concorde_struct] = TSP_tour_Dat(G_gadget2,'/home/ashishkb/softwares/concorde/concorde_build/TSP/concorde');
+
+  %   [Out_sol, time_concorde_struct] = TSP_tour_EXPLICIT(gadget2_compMat,'/home/ashishkb/softwares/concorde/concorde/TSP/concorde');
+            
+    [Out_sol, time_concorde_struct] = TSP_tour_Dat(G_gadget2,'/home/ashishkb/softwares/concorde/concorde/TSP/concorde');
     
     Out_solName = G_gadget2.Nodes.Name(Out_sol);
-    
 
     %%
     % following we are doing to highlight the solution

@@ -28,7 +28,7 @@ snap_distance = 0.05;
 
 
 %Read environment geometry from file
-environment = read_vertices_from_file('example1.environment');
+environment = read_vertices_from_file('example2_modified.environment');
 
 
 %Calculate a good plot window (bounding box) based on outer polygon of environment

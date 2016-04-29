@@ -1,3 +1,60 @@
+%plot visilibility
+
+    clf; set(gcf,'position',[200 500 700 600]); hold on;
+    axis equal; axis on; axis([X_MIN X_MAX Y_MIN Y_MAX]);
+
+    patch( environment{1}(:,1) , environment{1}(:,2) , 0.1*ones(1,length(environment{1}(:,1)) ) , ...
+           'w' , 'linewidth' , 1.5 );
+    for i = 2 : size(environment,2)
+        patch( environment{i}(:,1) , environment{i}(:,2) , 0.1*ones(1,length(environment{i}(:,1)) ) , ...
+               'k' , 'EdgeColor' , [0 0 0] , 'FaceColor' , [0.8 0.8 0.8] , 'linewidth' , 1.5 );
+    end
+
+
+
+    p1 = plot3(guards_x, guards_y, 0.4*ones(1,length(guards_y)), 'o','Markersize',5,'MarkerEdgeColor','k','MarkerFaceColor','k');
+    text(guards_x,guards_y, 0.4*ones(1,length(guards_y)), node_nam,'HorizontalAlignment','left','FontSize',8);
+
+
+    p2 = plot3(targets_x, targets_y, 0.4*ones(1,length(targets_x)), 's','Markersize',5,'MarkerEdgeColor','r','MarkerFaceColor','r');
+    text(targets_x,targets_y, 0.4*ones(1,length(targets_x)), target_nam,'HorizontalAlignment','left','FontSize',13);
+%%
+    %break just after G_comp_temp = digraph([], []); line 74
+    pdata_right = [3.98084484112396,7.95533836363301;9.51039443389633,0.414757900564329;3.15039773815711,0.414757900564329;3.15722177054659,4.00932637212185;5.94136112806105,3.20478998863015;0.411811535288686,6.76618145828282; 5.94136112806098,0.414757900564329; 0.411811535288686,3.17981057099319]; 
+    IN_tab_Zeroedge_forplot = IN_transform_Zeroedge(G_comp);
+
+    G_comp_temp_forplot = addedge(G_comp_temp, IN_tab_Zeroedge_forplot);
+%     G_comp_temp1 = G_comp_temp; %addnode(G_comp_temp, IN_tab_Nodes); 
+    figure;
+    plot(G_comp_temp_forplot, 'XData',  pdata_right(:,1), 'YData',  pdata_right(:,2));
+    title('I-N transformation ducplicate nodes');
+    
+    %%
+    %solve gtsp line breakpoint before outsol and use following code
+        [Out_sol, time_concorde_struct] = TSP_tour_Dat(G_gadget2,'/home/ashishkb/softwares/concorde/concorde/TSP/concorde');
+    
+    Out_solName = G_gadget2.Nodes.Name(Out_sol);
+    countir = 1;
+    for i = 1:3:length(Out_solName)
+         Outsol_gadget{countir} = Out_solName{i}(3:end);
+         countir  = countir + 1;
+    end
+    Outsol_gadget_num = findnode(G_gadget, Outsol_gadget);
+    s_solg = zeros(G_gadget.numnodes,1);
+    t_solg = zeros(G_gadget.numnodes,1);
+
+    for i = 2:G_gadget.numnodes
+        s_solg(i-1) = Outsol_gadget_num(i-1);
+        t_solg(i-1) = Outsol_gadget_num(i);
+    end
+
+    s_solg(G_gadget.numnodes) = t_solg(end-1);
+    t_solg(G_gadget.numnodes) = s_solg(1);
+    idxOut = ~(findedge(G_gadget_temp,s_solg,t_solg)~=0);
+    G_gadget_temp1 = addedge(G_gadget_temp,s_solg(idxOut),t_solg(idxOut), zeros(length(s_solg(idxOut)),1));
+    P_gadget2 = plot(G_gadget_temp1, 'XData',  P_gadge.XData, 'YData',  P_gadge.YData);
+    highlight(P_gadget2,s_solg,t_solg, 'NodeColor','g','EdgeColor','r');
+
 %%
 
 format long;
@@ -46,8 +103,8 @@ end
             
             figure(1);
             
-            plot3(guard_target_struct(1).guards_x, guard_target_struct(1).guards_y, 0.4*ones(1,length(guard_target_struct(1).guards_y)), 'o','Markersize',5,'MarkerEdgeColor','k','MarkerFaceColor','k');
-            text(guard_target_struct(1).guards_x,guard_target_struct(1).guards_y, 0.4*ones(1,length(guard_target_struct(1).guards_y)), node_nam,'HorizontalAlignment','left','FontSize',8);
+    %        plot3(guard_target_struct(1).guards_x, guard_target_struct(1).guards_y, 0.4*ones(1,length(guard_target_struct(1).guards_y)), 'o','Markersize',5,'MarkerEdgeColor','k','MarkerFaceColor','k');
+    %        text(guard_target_struct(1).guards_x,guard_target_struct(1).guards_y, 0.4*ones(1,length(guard_target_struct(1).guards_y)), node_nam,'HorizontalAlignment','left','FontSize',8);
         
         
             for i = 1:length(guard_target_struct(1).targets_x)
@@ -55,7 +112,7 @@ end
                 target_nam{i} = sprintf(' T%d',i);
         
             end
-        
+ %%       
             plot3(guard_target_struct(1).targets_x, guard_target_struct(1).targets_y, 0.4*ones(1,length(guard_target_struct(1).targets_x)),...
             's','Markersize',5,'MarkerEdgeColor','r','MarkerFaceColor','r');
             text(guard_target_struct(1).targets_x,guard_target_struct(1).targets_y, 0.4*ones(1,length(guard_target_struct(1).targets_x)),...

@@ -91,13 +91,31 @@ text(targets_x,targets_y, 0.4*ones(1,length(targets_x)), target_nam,'HorizontalA
 %Plot Guards
 % plot3(guards_x, guards_y, 0.4*ones(1,length(guards_y)), ...
 %     'o','Markersize',9,'MarkerEdgeColor','y','MarkerFaceColor','k');
+environ_guards = cell2mat(environment(:));
+%* guard_target_struct(1).environ_guardX = environ_guards(:,1);
+%* guard_target_struct(1).environ_guardY = environ_guards(:,2);
 
+
+environ_guardX = environ_guards(:,1);
+environ_guardY = environ_guards(:,2);
+guard_target_struct = struct('guards_x',{},'guards_y',{}, 'targets_x', {}, 'targets_y', {}, 'environ_guardX', {}, 'environ_guardY', {}, 'guards', {});
+%             nodes_totsp = 0;
+
+
+guard_target_struct(1).guards = [[guards_x, guards_y];[targets_x, targets_y]];  % guards and targets concatenated
+% 
+% 
+guard_target_struct(1).targets_x = targets_x;
+guard_target_struct(1).targets_y = targets_y;
+% % 
+guard_target_struct(1).guards_x = [guards_x];
+guard_target_struct(1).guards_y = [guards_y];
 
 
 
 
 %Compute and Plot visibility Graph
-visibility_adjacency_matrix = visibility_graph(guards, environment, epsilon);
+visibility_adjacency_matrix = visibility_graph(guard_target_struct(1).guards, environment, epsilon);
 % for i = 1 : size( visibility_adjacency_matrix , 1 )
 %     for j = 1 : size( visibility_adjacency_matrix , 2 )
 %         if( visibility_adjacency_matrix(i,j) == 1 )
