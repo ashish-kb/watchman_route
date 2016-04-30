@@ -59,7 +59,7 @@ end
 
 max_guards = 30; 
 max_targets = 30; 
-max_average = 10;
+max_average = 1;
 nodes_pushed_tsp = zeros(max_guards*max_targets, 1);
 time_script_auto_concorde = zeros(max_guards, max_targets, max_average);%struct('total_time',[],'concorde_time',[]);
 time_script_auto_total = zeros(max_guards, max_targets, max_average);

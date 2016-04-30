@@ -1,5 +1,39 @@
-%plot visilibility
+%%
+guards_x = guard_target_struct.guards_x;
+guards_y = guard_target_struct.guards_y;
 
+targets_x = guard_target_struct.targets_x;
+targets_y = guard_target_struct.targets_y;
+
+for i = 1:length(guard_target_struct(1).guards_x)
+
+    node_nam{i} = sprintf('  V%d',i);
+
+end
+
+figure(1);
+
+%        plot3(guard_target_struct(1).guards_x, guard_target_struct(1).guards_y, 0.4*ones(1,length(guard_target_struct(1).guards_y)), 'o','Markersize',5,'MarkerEdgeColor','k','MarkerFaceColor','k');
+%        text(guard_target_struct(1).guards_x,guard_target_struct(1).guards_y, 0.4*ones(1,length(guard_target_struct(1).guards_y)), node_nam,'HorizontalAlignment','left','FontSize',8);
+
+
+for i = 1:length(guard_target_struct(1).targets_x)
+
+    target_nam{i} = sprintf(' T%d',i);
+
+end
+
+
+%%
+%plot visilibility
+    environment_min_x = min(environment{1}(:,1));
+    environment_max_x = max(environment{1}(:,1));
+    environment_min_y = min(environment{1}(:,2));
+    environment_max_y = max(environment{1}(:,2));
+    X_MIN = environment_min_x-0.1*(environment_max_x-environment_min_x);
+    X_MAX = environment_max_x+0.1*(environment_max_x-environment_min_x);
+    Y_MIN = environment_min_y-0.1*(environment_max_y-environment_min_y);
+    Y_MAX = environment_max_y+0.1*(environment_max_y-environment_min_y);
     clf; set(gcf,'position',[200 500 700 600]); hold on;
     axis equal; axis on; axis([X_MIN X_MAX Y_MIN Y_MAX]);
 
@@ -95,23 +129,7 @@ end
 
 
 %%
-            for i = 1:length(guard_target_struct(1).guards_x)
-        
-                node_nam{i} = sprintf('  V%d',i);
-        
-            end
-            
-            figure(1);
-            
-    %        plot3(guard_target_struct(1).guards_x, guard_target_struct(1).guards_y, 0.4*ones(1,length(guard_target_struct(1).guards_y)), 'o','Markersize',5,'MarkerEdgeColor','k','MarkerFaceColor','k');
-    %        text(guard_target_struct(1).guards_x,guard_target_struct(1).guards_y, 0.4*ones(1,length(guard_target_struct(1).guards_y)), node_nam,'HorizontalAlignment','left','FontSize',8);
-        
-        
-            for i = 1:length(guard_target_struct(1).targets_x)
-        
-                target_nam{i} = sprintf(' T%d',i);
-        
-            end
+
  %%       
             plot3(guard_target_struct(1).targets_x, guard_target_struct(1).targets_y, 0.4*ones(1,length(guard_target_struct(1).targets_x)),...
             's','Markersize',5,'MarkerEdgeColor','r','MarkerFaceColor','r');
