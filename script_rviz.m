@@ -1,18 +1,9 @@
-%
-%=========VisiLibity Demonstration Script=========
-%
-%This script uses the MEX-files generated from 
-%visibility_graph.cpp.  Follow the instructions in 
-%visibility_graph.cpp to create the MEX-file before 
-%running this script. A graphical representation of 
-%the supplied environment file example1.environment 
-%is dislplayed together with the guards and their 
-%visibility graph (green edges).
-%
-%*****change filepath 
-
 %Clear the desk
 clear all; close all; clc;
+addpath(genpath('/home/ashishkb/Dropbox/MATLAB/RAASLAB/gtsp/solved_cases/'));
+addpath(genpath('/home/ashishkb/Dropbox/MATLAB/RAASLAB/gtsp/source_code/'));
+
+
 
 filepath_guards = 'ginput2.guards'; % where u want to store that data
 filepath_nodetarget = 'ginput2.nodetarget'; % just number of nodes and targets
@@ -26,7 +17,7 @@ epsilon = 0.000000001;
 
 
 %Read environment and guards geometry from files
-environment = read_vertices_from_file('./source_code/example2_modified.environment');
+environment = read_vertices_from_file('./source_code/gazebo_rviz.environment');
 
 
 
@@ -59,10 +50,15 @@ uiwait(msgbox(message));
 
 
 [guards_x, guards_y] = ginputc('Color', 'b','ShowPoints', true);%, 'ConnectPoints', true);
+
+% guards_file = read_vertices_from_file('./source_code/guards.environment');
+% guards_x = guards_file{1,1}(:,1);
+% guards_y = guards_file{1,1}(:,2);
+
 guards = [guards_x, guards_y];
 
-message = sprintf('Click targets; press enter to exit');
-uiwait(msgbox(message));
+%message = sprintf('Click targets; press enter to exit');
+%uiwait(msgbox(message));
 for i = 1:length(guards_x)
 
     node_nam{i} = sprintf('  V%d',i);
@@ -73,7 +69,12 @@ plot3(guards(:,1), guards(:,2), 0.4*ones(1,length(guards(:,2))), 'o','Markersize
 text(guards_x,guards_y, 0.4*ones(1,length(guards_y)), node_nam,'HorizontalAlignment','left','FontSize',8);
 
 
-[targets_x, targets_y] = ginputc('Color', 'r','ShowPoints', true);   %, 'ConnectPoints', true);
+
+%[targets_x, targets_y] = ginputc('Color', 'r','ShowPoints', true);   %, 'ConnectPoints', true);
+targets = read_vertices_from_file('./source_code/targets.environment');
+targets_x = targets{1,1}(:,1);
+targets_y = targets{1,1}(:,2);
+
 guards = [guards;[targets_x, targets_y]]; % concatenate targets with guards
 %guards = read_vertices_from_file('./source_code/example1.guards'); 
 %guards = guards{1}; % converts cell to mat
@@ -102,7 +103,7 @@ guard_target_struct = struct('guards_x',{},'guards_y',{}, 'targets_x', {}, 'targ
 %             nodes_totsp = 0;
 
 
-guard_target_struct(1).guards = [[guards_x, guards_y]; [targets_x, targets_y]];  % guards and targets concatenated
+guard_target_struct(1).guards = [[guards_x, guards_y];[targets_x, targets_y]];  % guards and targets concatenated
 % 
 % 
 guard_target_struct(1).targets_x = targets_x;
@@ -159,4 +160,3 @@ end
 fprintf(fid, '%d  %d', length(guards_x), length(targets_x));
 
 fclose(fid);
-

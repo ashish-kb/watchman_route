@@ -1,4 +1,5 @@
-%%
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++%%
 guards_x = guard_target_struct.guards_x;
 guards_y = guard_target_struct.guards_y;
 

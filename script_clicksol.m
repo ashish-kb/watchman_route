@@ -26,6 +26,22 @@ counter_struct =1;
 
 
         [outfin_sol, outfin_cost,Out_solName, Out_sol, G_init, edges_totsp, nodes_totsp, time_auto_for_struct] = auto_for_content_noon_bean(visibility_adjacency_matrix, guard_target_struct, counter_struct);
+        %%
+        outfin_sol_unique = [unique(outfin_sol,'stable') outfin_sol(1)];
+        
+        fid = fopen('goals.txt','W');
+        if fid < 0
+            error('Cannot create  file');
+            return;
+        end
+
+        %fprintf(fid,'//goals or outfin_sol_unique x-y coordinates \n');
+        %goals or outfin_sol_unique x-y coordinates
+        for i = 1:length(outfin_sol_unique)
+            fprintf(fid,'%f\t%f\n', guards_x(outfin_sol_unique(i)), guards_y(outfin_sol_unique(i)));
+        end
+
+        fclose(fid);
         
         %currently cost IN gtsp_to_atsp is changed ...we are using max max
         %instead OF SUMSUM

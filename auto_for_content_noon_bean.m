@@ -77,7 +77,7 @@ function [outfin_sol, outfin_cost,Out_solName, Out_sol, G_init, edges_totsp, nod
 
     for i = 1:length(r_vis)
 
-        guard_mat_weight(r_vis(i), c_vis(i)) = pdist2( [guards_x(r_vis(i)), guards_y(r_vis(i))], [guards_x(c_vis(i)), guards_y(c_vis(i))]);    
+        guard_mat_weight(r_vis(i), c_vis(i)) = pdist2([guards_x(r_vis(i)), guards_y(r_vis(i))], [guards_x(c_vis(i)), guards_y(c_vis(i))]);    
 
     end
 
