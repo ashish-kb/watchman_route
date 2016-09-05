@@ -1,7 +1,7 @@
 function [outfin_sol, outfin_cost,Out_solName, Out_sol, G_init, edges_totsp, nodes_totsp, time_auto_for_struct] = auto_for_content_noon_bean(visibility_adjacency_matrix, guard_target_struct, counter_struct)
     %[outfin_sol, outfin_cost,Out_solName, Out_sol, G_init, edges_totsp, nodes_totsp, time_concorde_struct] = solve_GTSP_noon_bean(V_adj, V_Cluster);
-%     filepath_guards = 'ginput2.guards'; % where u want to store that data
-%     filepath_nodetarget = 'ginput2.nodetarget'; % just number of nodes and targets
+    %filepath_guards = 'ginput2.guards'; % where u want to store that data
+    %filepath_nodetarget = 'ginput2.nodetarget'; % just number of nodes and targets
     time_auto_for_struct = struct('total_time',{},'concorde_time',{});
     
     

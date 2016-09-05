@@ -67,8 +67,9 @@ function [ outfin_sol, outfin_cost,Out_solName, Out_sol, G_init, edges_totsp, no
     
     G_alpha = rmnode(G_alpha, rm_node);
     G_alpha_mst = minspantree(G_alpha);
-    alpha_noon = 2*sum(G_alpha_mst.Edges.Weight(:));
-    beta_noon  = 2*sum(G_alpha_mst.Edges.Weight(:))*length(G_alpha_mst.Edges.Weight(:));
+    alpha_noon = 2*sum(G_alpha_mst.Edges.Weight(:)); % check p1 we want to add zero cost edges in the next step in p3 between (5b)and(5c) these edges should be preferred over a tour in p1 that is 2*weightMST
+    beta_noon  = 2*2*sum(G_alpha_mst.Edges.Weight(:))*length(G_alpha_mst.Edges.Weight(:));% check edges in p4 pg 28 noon bean - the zero cost edges that will be added between (4b)and (3b) in p6 should be 
+                                                                                        % prefered over a complete tour in p4 and a complete tour in p4 would not be bigger than alpha_noon*numberOfEdgesInG_alphaMST
 
 %some plots in the plot_script
      G_comp.Nodes.Cluster = V_Cluster;

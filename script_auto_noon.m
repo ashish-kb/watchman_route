@@ -95,7 +95,7 @@ for rand_guard_required = 5:5:max_guards
       %   uiwait(msgbox(sprintf('Target = %d, GuardsNew = %d',rand_target_required, rand_guard_required)));
         for average_generator = 1:max_average % this for loop ensures that average time for particular number of targets and guards is found
             guard_target_struct = struct('guards_x',{},'guards_y',{}, 'targets_x', {}, 'targets_y', {}, 'environ_guardX', {}, 'environ_guardY', {}, 'guards', {});
-%             nodes_totsp = 0;
+%            nodes_totsp = 0;
             
             guard_target_struct(1).environ_guardX = environ_guardX;
             guard_target_struct(1).environ_guardY = environ_guardY;

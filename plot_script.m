@@ -1,5 +1,5 @@
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++%%
+%%
 guards_x = guard_target_struct.guards_x;
 guards_y = guard_target_struct.guards_y;
 
@@ -53,6 +53,9 @@ end
 
     p2 = plot3(targets_x, targets_y, 0.4*ones(1,length(targets_x)), 's','Markersize',5,'MarkerEdgeColor','r','MarkerFaceColor','r');
     text(targets_x,targets_y, 0.4*ones(1,length(targets_x)), target_nam,'HorizontalAlignment','left','FontSize',13);
+    
+    p3 = plot3(bot_x, bot_y, 0.4*ones(1,length(bot_x)), 's','Markersize',5,'MarkerEdgeColor','b','MarkerFaceColor','b');
+    text(bot_x,bot_y, 0.4*ones(1,length(bot_x)), bot_nam,'HorizontalAlignment','left','FontSize',13);
 %%
     %break just after G_comp_temp = digraph([], []); line 74
     pdata_right = [3.98084484112396,7.95533836363301;9.51039443389633,0.414757900564329;3.15039773815711,0.414757900564329;3.15722177054659,4.00932637212185;5.94136112806105,3.20478998863015;0.411811535288686,6.76618145828282; 5.94136112806098,0.414757900564329; 0.411811535288686,3.17981057099319]; 
@@ -157,9 +160,3 @@ node_vec = cellfun(@(x) strsplit(x(2:(regexp(x,'-','start')-1)),'-') , G_comp.Ed
 %toc
 
 %%
-
- Cutting on node 431
-OVERFLOW in CCbigguy_addmult (4)
-BIGGUY errors are fatal
-FATAL ERROR - received signal SIGABRT (6/6)
-sleeping 1 more hours to permit debugger access
