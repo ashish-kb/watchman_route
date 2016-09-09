@@ -236,14 +236,14 @@ function [ outfin_sol, outfin_cost, Out_solName, G_init, G_nodebot, edges_totsp,
        str_d_vec(cell_jumpcount:i*length(G_atsp.Nodes.Name(:))) = cellfun(@(x) sprintf('B%d-d', i), G_atsp.Nodes.Name(:),'uni', 0);
        str_f_vec(cell_jumpcount:i*length(G_atsp.Nodes.Name(:))) = cellfun(@(x) sprintf('B%d-f', i), G_atsp.Nodes.Name(:),'uni', 0);
        str_V_vec(cell_jumpcount:i*length(G_atsp.Nodes.Name(:))) = G_atsp.Nodes.Name(:);
-       weight_vec(cell_jumpcount:i*length(G_atsp.Nodes.Name(:))) = G_nodebot_comp.Edges.Weight(findedge(G_nodebot_comp, cellfun(@(x) sprintf('B%d', i), G_atsp.Nodes.Name(:),'uni', 0), cellfun(@(x) x(1:2) , G_atsp.Nodes.Name(:,1),'uni',0)));
+       weight_vec(cell_jumpcount:i*length(G_atsp.Nodes.Name(:))) = G_nodebot_comp.Edges.Weight(findedge(G_nodebot_comp, cellfun(@(x) sprintf('B%d', i), G_atsp.Nodes.Name(:),'uni', 0), cellfun(@(x) x(1:(regexp(x,'-','start')-1)) , G_atsp.Nodes.Name(:,1),'uni',0)));
        cell_jumpcount = cell_jumpcount + length(G_atsp.Nodes.Name(:));
     end
     
     
     
     G_atsp = addedge(G_atsp, str_d_vec, str_V_vec, [weight_vec+(alpha_noon_botadd+beta_noon_botadd)*ones(size(weight_vec))]); % departure nodes are added penalty
-    G_atsp = addedge(G_atsp, str_V_vec, str_f_vec, [weight_vec]); % incoming node trying with and without penalty penalty = beta_noon_botadd*ones(size(weight_vec)) + alpha_noon_botadd*ones(size(weight_vec))
+    G_atsp = addedge(G_atsp, str_V_vec, str_f_vec, [weight_vec*0]); % incoming node trying with and without penalty penalty = beta_noon_botadd*ones(size(weight_vec)) + alpha_noon_botadd*ones(size(weight_vec))
     G_atsp = addedge(G_atsp, bot_Nodes.Name, circshift(bot_Nodes.Name, -1), zeros(length(bot_Nodes.Name), 1));
     %bot_order_changed = {'B2-d';'B2-f';'B1-d';'B1-f';'B3-d';'B3-f'};
   %  bot_order_changed = {'B2-d';'B2-f';'B3-d';'B3-f';'B1-d';'B1-f'};
@@ -453,11 +453,16 @@ function [ outfin_sol, outfin_cost, Out_solName, G_init, G_nodebot, edges_totsp,
     % check the costs in G_nodebot_comp.Edges
     % b2 -> 9(7) -> 11(4,8) -> 13(5,6,7) -> b2 ::: 78.372814269112240 + 1.103684171840059e+02 + 1.425669603284892e+02 + 2.277035256767233e+02 
     %  
-    % b3 -> v3 -> v1 -> b3 ::: 1.275029275866113e+02 + 1.650546691729253e+02 + 40.933535537731274
+    % b3 -> v3(2, 1) -> v1(3) -> b3 ::: 1.275029275866113e+02 + 1.650546691729253e+02 + 40.933535537731274
     %  
-    % b1 -> v18 -> v19 -> v22 -> b1   :::  85.316768751418860 + 58.366053168156080 + 1.508696283011450e+02 + 1.897923321106173e+02
+    % b1 -> v18(19) -> v19(10*****) -> v22(11) -> b1   :::  85.316768751418860 + 58.366053168156080 + 1.508696283011450e+02 + 1.897923321106173e+02
+    
+    % tsp of the above checking only the actual visited nodes and all the
+    % clusters they visit not checking intracluster edges
+    % 3;2;1b2-d -> 3;2;1;V9-7 -> 3:2:1V11-4 -> 3;2;1;V11-8 -> 3:2:1V13-5-> 3;2;1V13-6 ->      ..
     
     
+    % mostly the problem is with these edges -> {'1;B3-d','3;V1-3';'1;B3-d','3;V11-4'}
     
     
 %     %%
