@@ -56,6 +56,7 @@ counter_struct =1;
 
           
          
+         
            
           [outfin_sol, outfin_cost, Out_solName, G_init, G_nodebot, edges_totsp, nodes_totsp, time_concorde_struct] = auto_for_content_Multi_noon_bean(visibility_adjacency_matrix, guard_target_struct, counter_struct);
          

@@ -1,6 +1,6 @@
 function [ outfin_sol, outfin_cost, Out_solName, G_init, G_nodebot, edges_totsp, nodes_totsp, time_concorde_struct] = solveMulti_GTSP_noon_bean(V_adj, V_Cluster, V_adj_bot) % the fomat is given above
     
-    V_adj  = 10*V_adj;
+    V_adj  = 10*V_adj; % bumping up the cost to prevent rounding errors because of concorde
     V_adj_bot = 10*V_adj_bot;
     given_nodes = length(V_adj);
     node_name  = cell(1, given_nodes);
@@ -186,20 +186,17 @@ function [ outfin_sol, outfin_cost, Out_solName, G_init, G_nodebot, edges_totsp,
      % incoming with the right costs... then .....then do the same with b2
      % to v1 and so on.
      
-     bot_Nodes =  table(cell(num_bots,1), cell(num_bots,1), 'VariableNames', {'B_d', 'B_f'}); % external edge tab
-     
-     depot_rep = repmat(1:num_bots, num_bots, 1);
-     finish_rep = repmat([1:num_bots]', num_bots, 1);
-     
-     str_d = arrayfun(@(i) sprintf('B%d-d', i), depot_rep(:), 'UniformOutput', false);
-     str_f = arrayfun(@(i) sprintf('B%d-f', i), finish_rep, 'UniformOutput', false);
+     bot_Nodes =  table(cell(2*num_bots,1), 'VariableNames', {'Name'}); % external edge tab
+     df_count = 1;
+     for i = 1:num_bots
+         str_d = sprintf('B%d-d', i);
+         str_f = sprintf('B%d-f', i);
          
-     bot_Nodes = table(str_d, str_f, 'VariableNames', {'B_d', 'B_f'});
-                                 
+         bot_Nodes(df_count:(df_count+1), :) = table({str_d; str_f}, 'VariableNames', {'Name'});
          
-%      str_d_comp_from = 0;mat2cell(cell2mat(cellfun(@(x) repmat(x, length(bot_Nodes.B_d),1), bot_Nodes.B_d(:),'uni',0)), ones(1,length(bot_Nodes.B_d)^2), length(bot_Nodes.B_d{}));
-%      str_f_comp_to   = remat(bot_Nodes.finish, length(bot_Nodes.B_f),1);
-     
+         df_count  = df_count + 2;         
+                  
+     end
      
      % adding bot edges to the G_atsp graph
      
@@ -247,8 +244,7 @@ function [ outfin_sol, outfin_cost, Out_solName, G_init, G_nodebot, edges_totsp,
     
     G_atsp = addedge(G_atsp, str_d_vec, str_V_vec, [weight_vec+(alpha_noon_botadd+beta_noon_botadd)*ones(size(weight_vec))]); % departure nodes are added penalty
     G_atsp = addedge(G_atsp, str_V_vec, str_f_vec, [weight_vec*0]); % incoming node trying with and without penalty penalty = beta_noon_botadd*ones(size(weight_vec)) + alpha_noon_botadd*ones(size(weight_vec))
-    G_atsp = addedge(G_atsp, bot_Nodes.B_d, bot_Nodes.B_f, zeros(length(bot_Nodes.B_d), 1));
-    G_atsp = addedge(G_atsp, bot_Nodes.B_f, bot_Nodes.B_d, zeros(length(bot_Nodes.B_d), 1));
+    G_atsp = addedge(G_atsp, bot_Nodes.Name, circshift(bot_Nodes.Name, -1), zeros(length(bot_Nodes.Name), 1));
     %bot_order_changed = {'B2-d';'B2-f';'B1-d';'B1-f';'B3-d';'B3-f'};
   %  bot_order_changed = {'B2-d';'B2-f';'B3-d';'B3-f';'B1-d';'B1-f'};
    % G_atsp = addedge(G_atsp,  bot_order_changed, circshift(bot_order_changed, -1), zeros(length(bot_Nodes.Name), 1));
@@ -340,11 +336,19 @@ function [ outfin_sol, outfin_cost, Out_solName, G_init, G_nodebot, edges_totsp,
        %b_end = sprintf('B%d-f', i);
        b_ind_start =  find(cell2mat(cellfun(@(x) ismember(x, b_start), {split_Out'},'uni',0)));
       % b_ind_end =  find(cell2mat(cellfun(@(x) ismember(x, b_end), {split_Out'},'uni',0)));
+       b_ind_next = b_ind_start + 1;
+       b_ind_prev = b_ind_start - 1;
+       if(b_ind_next > length(split_Out))
+           b_ind_next = 1;
+       end
+       if(b_ind_prev < 1)
+           b_ind_prev = length(split_Out);
+       end
 
-       if (isequal(split_Out{b_ind_start+1}(1), 'V'))
+       if (isequal(split_Out{b_ind_next}(1), 'V'))
             split_circ = split_Out';                 
             split_circ = circshift(split_circ, -(b_ind_start-1));
-            depot_f_vec = find(cell2mat(cellfun(@(x) ismember(x(4), 'f'), split_circ, 'uni',0))); % B1-f type of nodes i.e. finish nodes 
+            depot_f_vec = find(cell2mat(cellfun(@(x) ismember(x(end), 'f'), split_circ, 'uni',0))); % B1-f type of nodes i.e. finish nodes 
             b_ind_end = depot_f_vec(1);
             b_end = split_circ(b_ind_end);
             
@@ -352,11 +356,11 @@ function [ outfin_sol, outfin_cost, Out_solName, G_init, G_nodebot, edges_totsp,
            
             bot_path(1:b_ind_end, i) = split_circ(1:b_ind_end)';
             
-       elseif(isequal(split_Out{b_ind_start-1}(1), 'V'))
+       elseif(isequal(split_Out{b_ind_prev}(1), 'V'))
            split_circ = flip(split_Out');
            b_ind_start = length(split_Out) - b_ind_start + 1;           
            split_circ = circshift(split_circ, -(b_ind_start-1));
-           depot_f_vec =  find(cell2mat(cellfun(@(x) ismember(x(4), 'f'), split_circ, 'uni',0))); % B1-f type of nodes i.e. finish nodes 
+           depot_f_vec =  find(cell2mat(cellfun(@(x) ismember(x(end), 'f'), split_circ, 'uni',0))); % B1-f type of nodes i.e. finish nodes 
            b_ind_end = depot_f_vec(1);
            b_end = split_circ(b_ind_end);
 %            b_ind_end = length(split_Out) - b_ind_end + 1;
