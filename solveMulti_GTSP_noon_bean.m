@@ -186,18 +186,32 @@ function [ outfin_sol, outfin_cost, Out_solName, G_init, G_nodebot, edges_totsp,
      % incoming with the right costs... then .....then do the same with b2
      % to v1 and so on.
      
-     bot_Nodes =  table(cell(2*num_bots,1), 'VariableNames', {'Name'}); % external edge tab
-     df_count = 1;
-     for i = 1:num_bots
-         str_d = sprintf('B%d-d', i);
-         str_f = sprintf('B%d-f', i);
-         
-         bot_Nodes(df_count:(df_count+1), :) = table({str_d; str_f}, 'VariableNames', {'Name'});
-         
-         df_count  = df_count + 2;         
-                  
-     end
+%      bot_Nodes =  table(cell(2*num_bots,1), 'VariableNames', {'Name'}); % external edge tab
+%      df_count = 1;
+%      for i = 1:num_bots
+%          str_d = sprintf('B%d-d', i);
+%          str_f = sprintf('B%d-f', i);
+%          
+%          bot_Nodes(df_count:(df_count+1), :) = table({str_d; str_f}, 'VariableNames', {'Name'});
+%          
+%          df_count  = df_count + 2;         
+%                   
+%      end
+%      
+
+     bot_Nodes =  table(cell(num_bots,1), cell(num_bots,1), 'VariableNames', {'B_d', 'B_f'}); % external edge tab
      
+     depot_rep = repmat(1:num_bots, num_bots, 1);
+     finish_rep = repmat([1:num_bots]', num_bots, 1);
+     
+     str_d = arrayfun(@(i) sprintf('B%d-d', i), depot_rep(:), 'UniformOutput', false);
+     str_f = arrayfun(@(i) sprintf('B%d-f', i), finish_rep, 'UniformOutput', false);
+         
+     bot_Nodes = table(str_d, str_f, 'VariableNames', {'B_d', 'B_f'});
+
+
+
+
      % adding bot edges to the G_atsp graph
      
      
@@ -243,8 +257,13 @@ function [ outfin_sol, outfin_cost, Out_solName, G_init, G_nodebot, edges_totsp,
     
     
     G_atsp = addedge(G_atsp, str_d_vec, str_V_vec, [weight_vec+(alpha_noon_botadd+beta_noon_botadd)*ones(size(weight_vec))]); % departure nodes are added penalty
-    G_atsp = addedge(G_atsp, str_V_vec, str_f_vec, [weight_vec*0]); % incoming node trying with and without penalty penalty = beta_noon_botadd*ones(size(weight_vec)) + alpha_noon_botadd*ones(size(weight_vec))
-    G_atsp = addedge(G_atsp, bot_Nodes.Name, circshift(bot_Nodes.Name, -1), zeros(length(bot_Nodes.Name), 1));
+    G_atsp = addedge(G_atsp, str_V_vec, str_f_vec, [weight_vec]); % incoming node trying with and without penalty penalty = beta_noon_botadd*ones(size(weight_vec)) + alpha_noon_botadd*ones(size(weight_vec))
+    
+    G_atsp = addedge(G_atsp, bot_Nodes.B_d, bot_Nodes.B_f, zeros(length(bot_Nodes.B_d), 1));
+    G_atsp = addedge(G_atsp, bot_Nodes.B_f, bot_Nodes.B_d, zeros(length(bot_Nodes.B_d), 1));
+    
+    
+    %G_atsp = addedge(G_atsp, bot_Nodes.Name, circshift(bot_Nodes.Name, -1), zeros(length(bot_Nodes.Name), 1));
     %bot_order_changed = {'B2-d';'B2-f';'B1-d';'B1-f';'B3-d';'B3-f'};
   %  bot_order_changed = {'B2-d';'B2-f';'B3-d';'B3-f';'B1-d';'B1-f'};
    % G_atsp = addedge(G_atsp,  bot_order_changed, circshift(bot_order_changed, -1), zeros(length(bot_Nodes.Name), 1));
