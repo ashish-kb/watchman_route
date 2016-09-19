@@ -105,19 +105,33 @@ G_atsp = digraph(Y_s,X_t, atspAdjMatrix(:), G_comp.Nodes.Name,'OmitSelfLoops');
 
 totalcost = sum(sum(adjMatrixCostCalcs));
 
+
 beta2 = beta_noon; %2*totalcost;
-
-
+[r(:,1) r(:,2)]=find(atspAdjMatrix==-1); % adjusting for -1 subtraction see below comments
+testing = atspAdjMatrix;
 for i=1:length(setMap)
     
     for j=1:length(setMap)
         
         if(atspAdjMatrix(i,j) ~= 0)
+            if(isempty(find(r(:,1)==i&r(:,2)==j)))
+                atspAdjMatrix(i,j) = atspAdjMatrix(i,j)+beta2;
+            else
+                atspAdjMatrix(i,j) = atspAdjMatrix(i,j)+beta2+1;
+                
+            % addition late finding -1 that are not on diagonal this is required
+            % because the formulation ends up subtracting 1 from intranode intercluster
+            % edges
+            end
             
-            atspAdjMatrix(i,j) = atspAdjMatrix(i,j)+beta2;
+            testing(i,j) = testing(i,j)+beta2;
         end
     end
 end
+
+
+
+
 
 infcost = beta2;
 
