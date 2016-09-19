@@ -68,7 +68,7 @@ fclose(fid);
 
 
 % Call the concorde solver
-cmd = [path_1 ' -x ' ' -N 10 ' in_filename];
+cmd = [path_1 ' -x' ' -N 10 ' in_filename];
 
 time_concorde_struct = struct('total_time',{},'concorde_time',{});
 time_concorde_struct(1).concorde_time  = tic;
