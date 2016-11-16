@@ -1,4 +1,4 @@
-function [outfin_sol, outfin_cost, Out_solName, G_init, G_nodebot, edges_totsp, nodes_totsp, time_concorde_struct] = auto_for_content_Multi_noon_bean(visibility_adjacency_matrix, guard_target_struct, counter_struct)
+function [outfin_sol, outfin_cost, Out_solName, whole_path_nodes, G_init, G_nodebot, edges_totsp, nodes_totsp, time_concorde_struct] = auto_for_content_Multi_noon_bean(visibility_adjacency_matrix, guard_target_struct, counter_struct)
     %[outfin_sol, outfin_cost,Out_solName, Out_sol, G_init, edges_totsp, nodes_totsp, time_concorde_struct] = solve_GTSP_noon_bean(V_adj, V_Cluster);
     %filepath_guards = 'ginput2.guards'; % where u want to store that data
     %filepath_nodetarget = 'ginput2.nodetarget'; % just number of nodes and targets
@@ -138,7 +138,7 @@ function [outfin_sol, outfin_cost, Out_solName, G_init, G_nodebot, edges_totsp, 
 
     %%
 
-    [outfin_sol, outfin_cost, Out_solName, G_init, G_nodebot, edges_totsp, nodes_totsp, time_concorde_struct] = solveMulti_GTSP_noon_bean(V_adj, V_Cluster, V_adj_bot);
+    [ outfin_sol, outfin_cost, Out_solName, whole_path_nodes,G_init, G_nodebot, edges_totsp, nodes_totsp, time_concorde_struct] = solveMulti_GTSP_noon_bean(V_adj, V_Cluster, V_adj_bot);
     
 
     time_auto_for_struct(1).concorde_time = time_concorde_struct(1).concorde_time;

@@ -1,7 +1,7 @@
-function [ outfin_sol, outfin_cost, Out_solName, G_init, G_nodebot, edges_totsp, nodes_totsp, time_concorde_struct] = solveMulti_GTSP_noon_bean(V_adj, V_Cluster, V_adj_bot) % the fomat is given above
+function [ outfin_sol, outfin_cost, Out_solName, whole_path_nodes,G_init, G_nodebot, edges_totsp, nodes_totsp, time_concorde_struct] = solveMulti_GTSP_noon_bean(V_adj, V_Cluster, V_adj_bot) % the fomat is given above
     
-    V_adj  = 10*V_adj; % bumping up the cost to prevent rounding errors because of concorde
-    V_adj_bot = 10*V_adj_bot;
+  %  V_adj  = 10*V_adj; % bumping up the cost to prevent rounding errors because of concorde
+  %  V_adj_bot = 10*V_adj_bot;
     given_nodes = length(V_adj);
     node_name  = cell(1, given_nodes);
     
@@ -15,9 +15,9 @@ function [ outfin_sol, outfin_cost, Out_solName, G_init, G_nodebot, edges_totsp,
 
     G_init = digraph(V_adj, node_name);
  
-%     figure;
-%     P_init = plot(G_init,'EdgeLabel', G_init.Edges.Weight);
-%     title('Given Graph');
+%      figure;
+%      P_init = plot(G_init,'EdgeLabel', G_init.Edges.Weight);
+%      title('Given Graph');
 
 
     [sz_r_G , sz_c_G] = size(V_adj);
@@ -67,9 +67,9 @@ function [ outfin_sol, outfin_cost, Out_solName, G_init, G_nodebot, edges_totsp,
     
      G_alpha = graph(V_comp, node_name, 'upper','OmitSelfLoops');
      Cluster_to_node = arrayfun(@(i)find(cellfun(@(s)ismember(i,s), V_Cluster)), 1:max([V_Cluster{:}]) , 'UniformOutput', false); % reverse lookup for Cluster_cell %http://stackoverflow.com/questions/14934796/reverse-lookup-in-matlab-cell-array-of-indices
-%       figure;
-%       plot(G_comp, 'EdgeLabel', G_comp.Edges.Weight);
-%       title('Completed Graph');
+%        figure;
+%        plot(G_comp, 'EdgeLabel', G_comp.Edges.Weight);
+%        title('Completed Graph');
 % extracting selective nodes to get a tour which would satisfy alpha and
 % beta requirement for noon bean. instead of sum of edges be upperbound this
 % will be the upperbound. And below we look for a tour to just any visit the
@@ -119,10 +119,10 @@ function [ outfin_sol, outfin_cost, Out_solName, G_init, G_nodebot, edges_totsp,
     G_comp_temp = addnode(G_comp_temp, IN_tab_Nodes); 
     
 
-
-%     figure;
-%     plot(G_comp);
-%     title('Given Completed Graph - without - duplicate nodes added and orphan nodes removed');
+% 
+%      figure;
+%      plot(G_comp, 'EdgeLabel', G_comp.Edges.Weight);
+%      title('Given Completed Graph - without - duplicate nodes added and orphan nodes removed');
     
     given_nodes = G_comp.numnodes; 
     
@@ -146,10 +146,10 @@ function [ outfin_sol, outfin_cost, Out_solName, G_init, G_nodebot, edges_totsp,
     IN_tab_Zeroedge = IN_transform_Zeroedge(G_comp);
 
     G_comp_temp = addedge(G_comp_temp, IN_tab_Zeroedge);
-    
-%     figure;
-%     title('Interedges, duplicate nodes and zero cost edges');
-%     plot(G_comp_temp, 'EdgeLabel', G_comp_temp.Edges.Weight);
+%     
+%      figure;     
+%      p_interedge= plot(G_comp_temp, 'EdgeLabel', G_comp_temp.Edges.Weight);
+%      title('Interedges, duplicate nodes and zero cost edges');
     
 %    pdata_right = [3.98084484112396,7.95533836363301;9.51039443389633,0.414757900564329;3.15039773815711,0.414757900564329;3.15722177054659,4.00932637212185;5.94136112806105,3.20478998863015;0.411811535288686,6.76618145828282; 5.94136112806098,0.414757900564329; 0.411811535288686,3.17981057099319]; 
     
@@ -178,6 +178,15 @@ function [ outfin_sol, outfin_cost, Out_solName, G_init, G_nodebot, edges_totsp,
     %0 cost edges to 0.01 cost, do something about that.
      [X_t Y_s] = meshgrid(1:length(G_comp.Nodes.Name), 1:length(G_comp.Nodes.Name));
      G_atsp = digraph(Y_s,X_t, atspAdjMatrix(:), G_comp.Nodes.Name,'OmitSelfLoops');  % the command below omits zero cost edges that is why it's done like this
+     
+     figure;
+     %[G_atsp_s G_atsp_t] = findedge(G_atsp);
+%      p_noonbean = plot(G_atsp, 'XData',  p_interedge.XData, 'YData', p_interedge.YData, 'EdgeLabel', G_atsp.Edges.Weight);
+%      highlight(p_noonbean, [2;3], [3;2], 'EdgeColor', 'k', 'LineStyle', ':', 'LineWidth', 1);
+%      highlight(p_noonbean, [2;2;3;3], [1;4;1;4], 'EdgeColor', 'r', 'LineStyle', '-', 'LineWidth', 0.8);
+%      title('tail shifted noon bean done');
+%      axis equal;
+     
      %%
      % adding the bot nodes  to the G_atsp graph
      
@@ -257,10 +266,27 @@ function [ outfin_sol, outfin_cost, Out_solName, G_init, G_nodebot, edges_totsp,
     
     
     G_atsp = addedge(G_atsp, str_d_vec, str_V_vec, [weight_vec+(alpha_noon_botadd+beta_noon_botadd)*ones(size(weight_vec))]); % departure nodes are added penalty
-    G_atsp = addedge(G_atsp, str_V_vec, str_f_vec, [weight_vec]); % incoming node trying with and without penalty penalty = beta_noon_botadd*ones(size(weight_vec)) + alpha_noon_botadd*ones(size(weight_vec))
+    G_atsp = addedge(G_atsp, str_V_vec, str_f_vec, [weight_vec]); % incoming node trying  without penalty 
     
     G_atsp = addedge(G_atsp, bot_Nodes.B_d, bot_Nodes.B_f, zeros(length(bot_Nodes.B_d), 1));
     G_atsp = addedge(G_atsp, bot_Nodes.B_f, bot_Nodes.B_d, zeros(length(bot_Nodes.B_d), 1));
+    
+    figure;
+    %plot(G_atsp, 'EdgeLabel', G_atsp.Edges.Weight);
+%     p_final = plot(G_atsp, 'XData',  [p_interedge.XData 0 1 1.3 2], 'YData', [p_interedge.YData -2.5  -3.5 -2.5  -3.5], 'EdgeLabel', G_atsp.Edges.Weight);
+%     highlight(p_final,[7 8],'NodeColor','k');
+%     highlight(p_final,[5 6],'NodeColor','g');
+%     highlight(p_final, [2;3;5;5;6;6;7;7;8;8], [3;2;7;8;7;8;5;6;5;6], 'EdgeColor', 'k', 'LineStyle', ':', 'LineWidth', 1);
+%     highlight(p_final, [5;5;5;5;6;6;6;6], [1;2;3;4;1;2;3;4], 'EdgeColor', 'g', 'LineStyle', '-', 'LineWidth', 0.8);
+%     highlight(p_final, [2;2;3;3], [1;4;1;4], 'EdgeColor', 'r', 'LineStyle', '-', 'LineWidth', 0.8);
+%     
+    
+    
+    
+    p_final.ArrowSize = 11
+    
+    axis equal;
+    title('bot edges added to the noonbean-ed graph');
     
     
     %G_atsp = addedge(G_atsp, bot_Nodes.Name, circshift(bot_Nodes.Name, -1), zeros(length(bot_Nodes.Name), 1));
@@ -474,6 +500,29 @@ function [ outfin_sol, outfin_cost, Out_solName, G_init, G_nodebot, edges_totsp,
     outfin_cost = forw_cost;
     outfin_sol = node_num_forw_cell;
     
+    whole_path_nodes = cell(num_bots,1);
+
+    for i = 1:num_bots
+        for j = 1:length(node_num_forw_cell{i})
+           if(j==1)
+               str_s_bot2node = sprintf('B%d', -1*node_num_forw_cell{i,1}(1));
+               str_t_bot2node = sprintf('V%d', node_num_forw_cell{i,1}(2));
+               whole_path_nodes{i} =  [whole_path_nodes{i}; shortestpath(G_nodebot, str_s_bot2node, str_t_bot2node)];  
+           elseif(j>1 && j< length(node_num_forw_cell{i})-1)
+               str_s_node2node = sprintf('V%d', node_num_forw_cell{i,1}(j));
+               str_t_node2node = sprintf('V%d', node_num_forw_cell{i,1}(j+1));
+               whole_path_nodes{i} =  [whole_path_nodes{i}(1:end-1) shortestpath(G_nodebot, str_s_node2node, str_t_node2node)]; 
+           elseif (j==length(node_num_forw_cell{i})-1)
+
+               str_s_node2bot = sprintf('V%d', node_num_forw_cell{i,1}(end-1));
+               str_t_node2bot = sprintf('B%d', -1*node_num_forw_cell{i,1}(end));
+               whole_path_nodes{i} =  [whole_path_nodes{i}(1:end-1) shortestpath(G_nodebot, str_s_node2bot, str_t_node2bot)]; 
+           end
+
+
+
+        end
+    end
     % 
     
     % a hand made tour which costs less than the optimal here 

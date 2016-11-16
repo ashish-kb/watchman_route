@@ -1,5 +1,5 @@
 %Clear the desk
-clear all; clc; figure;
+clc; figure;
 addpath(genpath('/home/ashishkb/Dropbox/MATLAB/RAASLAB/gtsp/solved_cases/'));
 addpath(genpath('/home/ashishkb/Dropbox/MATLAB/RAASLAB/gtsp/source_code/'));
 
@@ -17,7 +17,7 @@ epsilon = 0.000000001;
 
 
 %Read environment and guards geometry from files
-environment = read_vertices_from_file('./source_code/example1.environment');
+environment = read_vertices_from_file('./source_code/gazebo_rviz.environment');
 
 
 
@@ -45,11 +45,11 @@ for i = 2 : size(environment,2)
            'k' , 'EdgeColor' , [0 0 0] , 'FaceColor' , [0.8 0.8 0.8] , 'linewidth' , 1.5 );
 end
 
-message = sprintf('Click nodes; press enter to exit');
-uiwait(msgbox(message));
+%message = sprintf('Click nodes; press enter to exit');
+%uiwait(msgbox(message));
 
 
-[guards_x, guards_y] = ginputc('Color', 'b','ShowPoints', true);%, 'ConnectPoints', true);
+%[guards_x, guards_y] = ginputc('Color', 'b','ShowPoints', true);%, 'ConnectPoints', true);
 
 % guards_file = read_vertices_from_file('./source_code/guards.environment');
 % guards_x = guards_file{1,1}(:,1);
@@ -68,8 +68,8 @@ plot3(guards(:,1), guards(:,2), 0.4*ones(1,length(guards(:,2))), 'o','Markersize
 text(guards_x,guards_y, 0.4*ones(1,length(guards_y)), node_nam,'HorizontalAlignment','left','FontSize',8);
 
 message = sprintf('Click targets; press enter to exit');
-uiwait(msgbox(message));
-[targets_x, targets_y] = ginputc('Color', 'r','ShowPoints', true);   %, 'ConnectPoints', true);
+%uiwait(msgbox(message));
+%[targets_x, targets_y] = ginputc('Color', 'r','ShowPoints', true);   %, 'ConnectPoints', true);
 % targets = read_vertices_from_file('./source_code/targets.environment');
 % targets_x = targets{1,1}(:,1);
 % targets_y = targets{1,1}(:,2);
