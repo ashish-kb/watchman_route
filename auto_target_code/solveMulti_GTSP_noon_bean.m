@@ -95,9 +95,9 @@ function [ outfin_sol, outfin_cost, Out_solName, whole_path_nodes,G_init, G_node
     alpha_noon = 2*sum(G_alpha_mst.Edges.Weight(:)); % check p1(noon bean paper) we want to add zero cost edges in the next step in p3 between (5b)and(5c) these edges should be preferred over a tour in p1 that is 2*weightMST
     %major additions that are a bit doubtful
     alpha_noon_botadd = alpha_noon + 2*num_bots*max(G_nodebot_comp.Edges.Weight);
-    beta_noon  = 2*alpha_noon_botadd*length(G_alpha_mst.Edges.Weight(:)); % check edges in p4 pg 28 noon bean - the zero cost edges that will be added between (4b)and (3b) in p6 should be 
+    beta_noon  = 2*alpha_noon_botadd*(1+length(G_alpha_mst.Edges.Weight(:))); % check edges in p4 pg 28 noon bean - the zero cost edges that will be added between (4b)and (3b) in p6 should be 
                                                                                          % prefered over a complete tour in p4 and a complete tour in p4 would not be bigger than alpha_noon*numberOfEdgesInG_alphaMST
-    beta_noon_botadd = beta_noon + 2*num_bots*alpha_noon_botadd;
+    beta_noon_botadd = beta_noon + 2*num_bots*(1+alpha_noon_botadd);
     %****my addition ***********%
     %beta_noon_botadd = 2*beta_noon_botadd*length(G_alpha_mst.Edges.Weight(:)) + 2*num_bots*beta_noon_botadd;
 %some plots in the plot_script
@@ -136,27 +136,27 @@ function [ outfin_sol, outfin_cost, Out_solName, whole_path_nodes,G_init, G_node
     IN_Interedge_w = IN_Interedge_w(IN_Interedge_w>0);
     
     
-%     IN_tab_Interedge = IN_tab_Interedge(~cellfun('isempty',IN_tab_Interedge.EndNodes(:,1)),:); % remove the empty entries from the table
+%   IN_tab_Interedge = IN_tab_Interedge(~cellfun('isempty',IN_tab_Interedge.EndNodes(:,1)),:); % remove the empty entries from the table
     
-%     G_comp_temp = addedge(G_comp_temp, IN_tab_Interedge);
-    G_comp_temp = addedge(G_comp_temp, IN_Interedge_s, IN_Interedge_e, IN_Interedge_w);     % fin_sol = fin_sol(~cellfun('isempty',fin_sol)); % removing empty cells
+%   G_comp_temp = addedge(G_comp_temp, IN_tab_Interedge);
+    G_comp_temp = addedge(G_comp_temp, IN_Interedge_s, IN_Interedge_e, IN_Interedge_w);  % fin_sol = fin_sol(~cellfun('isempty',fin_sol)); % removing empty cells
     
-    % % adding zero cost edges between the new nodes
+%   adding zero cost edges between the new nodes
 
     IN_tab_Zeroedge = IN_transform_Zeroedge(G_comp);
 
     G_comp_temp = addedge(G_comp_temp, IN_tab_Zeroedge);
 %     
-%      figure;     
-%      p_interedge= plot(G_comp_temp, 'EdgeLabel', G_comp_temp.Edges.Weight);
-%      title('Interedges, duplicate nodes and zero cost edges');
+%   figure;     
+%   p_interedge= plot(G_comp_temp, 'EdgeLabel', G_comp_temp.Edges.Weight);
+%   title('Interedges, duplicate nodes and zero cost edges');
     
-%    pdata_right = [3.98084484112396,7.95533836363301;9.51039443389633,0.414757900564329;3.15039773815711,0.414757900564329;3.15722177054659,4.00932637212185;5.94136112806105,3.20478998863015;0.411811535288686,6.76618145828282; 5.94136112806098,0.414757900564329; 0.411811535288686,3.17981057099319]; 
+%   pdata_right = [3.98084484112396,7.95533836363301;9.51039443389633,0.414757900564329;3.15039773815711,0.414757900564329;3.15722177054659,4.00932637212185;5.94136112806105,3.20478998863015;0.411811535288686,6.76618145828282; 5.94136112806098,0.414757900564329; 0.411811535288686,3.17981057099319]; 
     
     
-%     figure;
-%     plot(G_comp_temp, 'XData',  pdata_right(:,1), 'YData',  pdata_right(:,2), 'EdgeLabel', G_comp_temp.Edges.Weight);
-%     title('I-N transformation ducplicate nodes');
+%   figure;
+%   plot(G_comp_temp, 'XData',  pdata_right(:,1), 'YData',  pdata_right(:,2), 'EdgeLabel', G_comp_temp.Edges.Weight);
+%   title('I-N transformation ducplicate nodes');
     
     
     G_comp = G_comp_temp;
@@ -259,15 +259,52 @@ function [ outfin_sol, outfin_cost, Out_solName, whole_path_nodes,G_init, G_node
        str_d_vec(cell_jumpcount:i*length(G_atsp.Nodes.Name(:))) = cellfun(@(x) sprintf('B%d-d', i), G_atsp.Nodes.Name(:),'uni', 0);
        str_f_vec(cell_jumpcount:i*length(G_atsp.Nodes.Name(:))) = cellfun(@(x) sprintf('B%d-f', i), G_atsp.Nodes.Name(:),'uni', 0);
        str_V_vec(cell_jumpcount:i*length(G_atsp.Nodes.Name(:))) = G_atsp.Nodes.Name(:);
-       weight_vec(cell_jumpcount:i*length(G_atsp.Nodes.Name(:))) = G_nodebot_comp.Edges.Weight(findedge(G_nodebot_comp, cellfun(@(x) sprintf('B%d', i), G_atsp.Nodes.Name(:),'uni', 0), cellfun(@(x) x(1:(regexp(x,'-','start')-1)) , G_atsp.Nodes.Name(:,1),'uni',0)));
+       weight_vec(cell_jumpcount:i*length(G_atsp.Nodes.Name(:)))...
+           = G_nodebot_comp.Edges.Weight(findedge(G_nodebot_comp, cellfun(@(x) sprintf('B%d', i), G_atsp.Nodes.Name(:),'uni', 0), cellfun(@(x) x(1:(regexp(x,'-','start')-1)) , G_atsp.Nodes.Name(:,1),'uni',0)));
        cell_jumpcount = cell_jumpcount + length(G_atsp.Nodes.Name(:));
     end
     
     
     
     G_atsp = addedge(G_atsp, str_d_vec, str_V_vec, [weight_vec+(alpha_noon_botadd+beta_noon_botadd)*ones(size(weight_vec))]); % departure nodes are added penalty
-    G_atsp = addedge(G_atsp, str_V_vec, str_f_vec, [weight_vec]); % incoming node trying  without penalty 
+%   G_atsp = addedge(G_atsp, str_V_vec, str_f_vec, [weight_vec]); 
+%  ******* incoming node without penalty % Adding tail switching code
     
+    edge_table = G_atsp.Edges;
+    zero_weight_ind = edge_table.Weight==0;
+
+    cur_clus_cell = cell(1, length(Cluster_to_node));
+    weight_vec_cell = cell(num_bots, 1);
+    str_f_cell = cell(num_bots,1);
+
+    for i = 1: length(Cluster_to_node)
+        log_ind_clus(:,i) = cell2mat(cellfun(@(x) isequal(sprintf('-%d', i),x(regexp(x,'-','start'):end)), edge_table.EndNodes(:,2), 'uni', 0 ));
+        cur_clus_ind = log_ind_clus(:,i) & zero_weight_ind;
+        cur_clus_cell{1,i} = edge_table.EndNodes(cur_clus_ind==1, 1); % cell containing names of all the nodes in cluster i connected in a cycle
+        
+        for j = 1:num_bots
+            
+            % this time as we have edges from all nodes to all finish
+            % depots, we don't need to tail shift but only assign costs of
+            % current edge to the previous edge. 
+            weight_vec_cell{j,1} = ...
+            circshift(G_nodebot_comp.Edges.Weight(findedge(G_nodebot_comp, cellfun(@(x) sprintf('B%d', j), cur_clus_cell{1,i},'uni', 0), cellfun(@(x) x(1:(regexp(x,'-','start')-1)) , cur_clus_cell{1,i},'uni',0))),-1); 
+            
+            str_f_cell{j, 1} = cellfun(@(x) sprintf('B%d-f', j), cur_clus_cell{1,i},'uni', 0);
+
+
+        end
+
+        concat_f_cell = [str_f_cell{:,:}];
+        concat_w_cell = [weight_vec_cell{:,:}];
+        G_atsp = addedge(G_atsp, repmat(cur_clus_cell{1,i}, num_bots, 1), concat_f_cell(:), [concat_w_cell(:)]); 
+
+    end
+
+% **********end of tail shifting code for edges from nodes to finish depots
+   
+   
+   
     G_atsp = addedge(G_atsp, bot_Nodes.B_d, bot_Nodes.B_f, zeros(length(bot_Nodes.B_d), 1));
     G_atsp = addedge(G_atsp, bot_Nodes.B_f, bot_Nodes.B_d, zeros(length(bot_Nodes.B_d), 1));
     
@@ -523,6 +560,116 @@ function [ outfin_sol, outfin_cost, Out_solName, whole_path_nodes,G_init, G_node
 
         end
     end
-  
+    % 
+    
+    % a hand made tour which costs less than the optimal here 
+    % check the costs in G_nodebot_comp.Edges
+    % b2 -> 9(7) -> 11(4,8) -> 13(5,6,7) -> b2 ::: 78.372814269112240 + 1.103684171840059e+02 + 1.425669603284892e+02 + 2.277035256767233e+02 
+    %  
+    % b3 -> v3(2, 1) -> v1(3) -> b3 ::: 1.275029275866113e+02 + 1.650546691729253e+02 + 40.933535537731274
+    %  
+    % b1 -> v18(19) -> v19(10*****) -> v22(11) -> b1   :::  85.316768751418860 + 58.366053168156080 + 1.508696283011450e+02 + 1.897923321106173e+02
+    
+    % tsp of the above checking only the actual visited nodes and all the
+    % clusters they visit not checking intracluster edges
+    % 3;2;1b2-d -> 3;2;1;V9-7 -> 3:2:1V11-4 -> 3;2;1;V11-8 -> 3:2:1V13-5-> 3;2;1V13-6 ->      ..
+    
+    
+    % mostly the problem is with these edges -> {'1;B3-d','3;V1-3';'1;B3-d','3;V11-4'}
+    
+    
+%     %%
+%     
+%     
+%     
+%    % split_Out{cnter} = split_Out{1};
+%     %seq_clus = [1,3,5,2,4,4,6,6];
+%     %seq_forw = true(1,length(seq_clus));
+%     node_num_forw = [];
+%     test_prev_forw = 'o';
+%     cnter = 1;  % counter
+%     % checking forward set for solution as we can have solution in both
+%     % direction of split_Out
+%    for i = 1:length(split_Out) % random initialisation
+%         if(isequal(test_prev_forw, split_Out{i}(regexp(split_Out{i},'-','start'):end)))
+%             %seq_forw(i) = false;
+%         else
+%             node_num_forw(cnter) =  str2num(split_Out{i}(2:(regexp(split_Out{i},'-','start')-1)));
+%             cnter = cnter + 1;
+%         end   
+%         
+%         test_prev_forw = split_Out{i}(regexp(split_Out{i},'-','start'):end);
+%         
+%    end
+%     % checking for backward set
+%    cnter = 1;
+%    node_num_back = [];
+%    test_prev_back = 't'; % random initialisation
+%    for i = length(split_Out):-1:1
+%         if(isequal(test_prev_back,split_Out{i}(regexp(split_Out{i},'-','start'):end)))
+%             %seq_forw(i) = false;
+%         else
+%             node_num_back(cnter) = str2num( split_Out{i}(2:(regexp(split_Out{i},'-','start')-1)));
+%             cnter = cnter + 1;
+%         end   
+%         
+%         test_prev_back = split_Out{i}(regexp(split_Out{i},'-','start'):end);
+%         
+%    end
+%    
+%    
+%    
+%    s_forw(1:(length(node_num_forw)-1)) = node_num_forw(1:(end-1));
+%    t_forw(1:(length(node_num_forw)-1)) = node_num_forw(2:end);
+%    s_forw(length(node_num_forw)) = node_num_forw(end);
+%    t_forw(length(node_num_forw)) = node_num_forw(1);
+%    
+%    G_comp_allnode = digraph(V_comp, node_name);
+%    
+%    edges_forw = findedge(G_comp_allnode, s_forw,t_forw);
+%    forw_cost = sum(G_comp_allnode.Edges.Weight(edges_forw(edges_forw~=0)));
+%    
+%    s_back(1:(length(node_num_back)-1)) = node_num_back(1:(end-1));
+%    t_back(1:(length(node_num_back)-1)) = node_num_back(2:end);
+%    s_back(length(node_num_back)) = node_num_back(end);
+%    t_back(length(node_num_back)) = node_num_back(1);
+%    
+%    edges_back = findedge(G_comp_allnode, s_back,t_back);
+%    back_cost = sum(G_comp_allnode.Edges.Weight(edges_back(edges_back~=0)));
+%     
+%    
+%    split_Out_back = flip(split_Out);
+%    
+%    if(forw_cost<=back_cost)
+%         outfin_sol = node_num_forw;
+%         outfin_cost = forw_cost;
+%    else
+%         outfin_sol = node_num_back;
+%         outfin_cost = back_cost;
+%    end
+%     %fin_rm_redunt = fin_rm_redunt(~cellfun('isempty',fin_rm_redunt)); % removing empty cells
+% %     fin_rm_redunt = {'V20-9','V19-4','V5-6','V18-8','V14-5','V12-10','V17-7','V16-2','V8-3','V2-1'};%split_Out_back;
+% %     whole_path = {};
+% %     total_cost = 0;
+% %     for i = 1:(length(fin_rm_redunt)-1)
+% % 
+% %        %  cur_path = shortestpath(G_init, fin_rm_redunt(i), fin_rm_redunt(i+1)); % path between currently selected nodes
+% %          total_cost = total_cost + distances(G_comp, findnode(G_comp,fin_rm_redunt{i}), findnode(G_comp,fin_rm_redunt{i+1}));
+% %          if(i==1)
+% %             % whole_path = G_init.Nodes.Name{fin_rm_redunt(i)};
+% % 
+% %          end
+% %        %  whole_path =  [whole_path;  G_init.Nodes.Name{cur_path(2:end)'}]; %adding cur_path to whole_path
+% % 
+% %     end
+% %     
+% %     if( length(fin_rm_redunt) ==1) % won't go into previous loop as length is 1
+% %       % whole_path = fin_rm_redunt(1);
+% %     end
+% % 
+% %       %  total_cost = total_cost + distances(G_init, findnode(G_init,whole_path{end}), findnode(G_init,whole_path{1}));
+%        % end_path = shortestpath(G_init, whole_path{end}, whole_path{1}); % path between last node and first node
+%       %  whole_path = [whole_path; end_path(2:end)'];
+%     
     
 end
