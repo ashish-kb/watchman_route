@@ -1,45 +1,11 @@
 function [outfin_sol, outfin_cost, Out_solName, whole_path_nodes, G_init,...
     G_nodebot, edges_totsp, nodes_totsp, time_concorde_struct, time_auto_for_struct]...
     = auto_for_content_Multi_noon_bean(visibility_adjacency_matrix, guard_target_struct, counter_struct)
-    %[outfin_sol, outfin_cost,Out_solName, Out_sol, G_init, edges_totsp, nodes_totsp, time_concorde_struct] = solve_GTSP_noon_bean(V_adj, V_Cluster);
-    %filepath_guards = 'ginput2.guards'; % where u want to store that data
-    %filepath_nodetarget = 'ginput2.nodetarget'; % just number of nodes and targets
+
     time_auto_for_struct = struct('total_time',{},'concorde_time',{});
     
     
-    
-
-
-
-    %%
-    % write data to files
-
-
-%     fid = fopen(filepath_guards,'W');
-%     if fid < 0
-%         error('Cannot create  file');
-%         return;
-%     end
-% 
-%     fprintf(fid,'//Guard x-y coordinates \n');
-% 
-%     for i = 1:length(guards)
-%         fprintf(fid,'%d %d\n', guards(i,1), guards(i,2));
-%     end
-% 
-%     fclose(fid);
-% 
-% 
-%     fid = fopen(filepath_nodetarget,'W');
-%     if fid < 0
-%         error('Cannot create file');
-%         return;
-%     end
-%     fprintf(fid, '%d  %d', length(guards_x), length(targets_x));
-% 
-%     fclose(fid);
-
-
+   
     %%
     %
     
@@ -100,12 +66,7 @@ function [outfin_sol, outfin_cost, Out_solName, whole_path_nodes, G_init,...
     
     %%
     %new V_adj for bots
-    
-    %getbot_col = visibility_adjacency_matrix(1:length(guards_x), (length(visibility_adjacency_matrix) - length(bot_x)+1):end); %
-    %getbot_row = getbot_col';
-    %cat_interbot = visibility_adjacency_matrix((length(visibility_adjacency_matrix) - length(bot_x)+1):end, (length(visibility_adjacency_matrix) - length(bot_x)+1):end);
-    %bot_mat = vertcat(horzcat(visibility_adjacency_matrix(1:length(guards_x),1:length(guards_x)), getbot_col), [getbot_row cat_interbot]);
-    
+ 
     visility_adj_guardbot = zeros(size(visibility_adjacency_matrix));
     bot_locat_invisilibility = (length(visibility_adjacency_matrix) - length(bot_x)+1):length(visibility_adjacency_matrix);
     visility_adj_guardbot(1:length(guards_x), 1:length(guards_x)) = visibility_adjacency_matrix(1:length(guards_x),1:length(guards_x));
@@ -129,11 +90,7 @@ function [outfin_sol, outfin_cost, Out_solName, whole_path_nodes, G_init,...
     %removing target rows and cols 
     V_adj_bot = V_adj_bot([1:length(guards_x) (length(guards_x)+length(targets_x)+1):length(V_adj_bot)], [1:length(guards_x) (length(guards_x)+length(targets_x)+1):length(V_adj_bot)]);
 
-    
-    % I think putting zeros where we have targets and then extracting
-    % guard+bot_mat_weight is better... after that remove the zeros(where targets are) while making the
-    % graph in solveMulti_GTSP_noon_bean, then use distances and then use
-    % these distance to make edges to all nodes finally
+   
     
     
     
