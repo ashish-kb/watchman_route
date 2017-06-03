@@ -5,3 +5,8 @@ main file -> "solveMulti_GTSP_noon_bean.m". This is the code for our paper submi
 Videos
 1
 https://www.youtube.com/watch?v=lvUyoFZBqxA&index=12&list=PLB0JNoFPXhUEy6VpVd32q8GGVgbSc9d3F
+
+
+
+Gazebo Implementation - https://github.com/ashish-kb/gtsp_gazebo/tree/master/src 
+main file -> "multiple_goal_publisher_multiple_robots.py"**  
